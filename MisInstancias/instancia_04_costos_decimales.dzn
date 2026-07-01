@@ -1,0 +1,22 @@
+% Generado automáticamente desde instancia_04_costos_decimales.pca.
+% No editar manualmente: use el conversor PCA.
+
+n = 18;
+m = 6;
+p = [3, 3, 3, 3, 3, 3];
+
+escala_v = 100;
+v = [0, 10, 35, 65, 90, 100];
+
+escala_costo = 100;
+ce = [50, 75, 125, 125, 75, 50];
+ct = 1875;
+
+c = array2d(1..6, 1..6, [
+    0, 80, 170, 320, 450, 500,
+    80, 0, 110, 250, 380, 450,
+    170, 110, 0, 120, 250, 320,
+    320, 250, 120, 0, 110, 170,
+    450, 380, 250, 110, 0, 80,
+    500, 450, 320, 170, 80, 0
+]);

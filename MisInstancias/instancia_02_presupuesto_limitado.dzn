@@ -1,0 +1,21 @@
+% Generado automáticamente desde instancia_02_presupuesto_limitado.pca.
+% No editar manualmente: use el conversor PCA.
+
+n = 20;
+m = 5;
+p = [8, 4, 0, 4, 4];
+
+escala_v = 10;
+v = [0, 2, 5, 8, 10];
+
+escala_costo = 1;
+ce = [0, 1, 5, 1, 0];
+ct = 10;
+
+c = array2d(1..5, 1..5, [
+    0, 1, 4, 6, 8,
+    1, 0, 2, 5, 7,
+    4, 2, 0, 2, 4,
+    6, 5, 2, 0, 1,
+    8, 7, 4, 1, 0
+]);

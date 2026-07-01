@@ -1,0 +1,14 @@
+Instancia: instancia_02_presupuesto_limitado
+Estado: ÓPTIMO
+Solver: HiGHS
+Distribución final: [2, 10, 0, 5, 3]
+Costo usado: 9.6 (48/5)
+Polarización óptima: 5.8 (29/5)
+Índice de mediana: 2
+Valor de mediana: 0.2 (1/5)
+Matriz de movimientos:
+0,6,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,0,0
+0,0,0,1,0

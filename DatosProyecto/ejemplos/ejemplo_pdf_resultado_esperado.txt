@@ -1,0 +1,42 @@
+Resultado óptimo verificado para el ejemplo de la sección 2.4
+
+Matriz de movimientos x[i,j]
+
+0,0,0,0,0
+4,0,0,0,0
+0,0,0,0,0
+2,2,0,0,0
+0,0,0,0,0
+
+Distribución final: [18,2,0,0,0]
+Costo total: 19.2
+Polarización: 0.5
+Índice de la mediana seleccionada: 1
+Valor de la mediana: 0
+
+Comprobación del costo:
+
+- 4 personas de la opinión 2 a la 1:
+  4 * 1 * (1 + 4/20) = 4.8
+- 2 personas de la opinión 4 a la 1:
+  2 * 4 * (1 + 4/20) = 9.6
+- 2 personas de la opinión 4 a la 2:
+  2 * 2 * (1 + 4/20) = 4.8
+- Total: 19.2 <= 20
+
+Comprobación de la polarización:
+
+18 * |0 - 0| + 2 * |0.25 - 0| = 0.5
+
+El valor 0.5 se verificó por enumeración exhaustiva independiente de las
+distribuciones finales alcanzables bajo el presupuesto. La enumeración
+encontró 447 distribuciones factibles distintas.
+
+Validación con MiniZinc 2.9.7:
+
+- HiGHS 1.14.0: óptimo 50/100; 1 nodo; 0.0257 s de resolución.
+- COIN-BC 2.10.13: óptimo 50/100; 0 nodos; 0.0190 s de resolución.
+- Chuffed 0.13.2: óptimo 50/100; 169 nodos; 0.006 s de resolución.
+
+Los tiempos corresponden a una ejecución puntual y no deben interpretarse
+todavía como una comparación experimental entre solvers.

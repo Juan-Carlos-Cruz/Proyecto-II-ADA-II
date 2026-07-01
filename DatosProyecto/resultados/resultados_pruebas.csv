@@ -1,0 +1,11 @@
+instancia,n,m,ct,costo_usado,polarizacion,tiempo_solver_s,estado,solver,nodos,observaciones
+ejemplo_pdf,20,5,20,19.2 (96/5),0.5 (1/2),0.0263,ÓPTIMO,HiGHS,1,Instancia de la sección 2.4.
+instancia_01_consenso,10,4,12,11.7 (117/10),0,0.0117,ÓPTIMO,HiGHS,1,El presupuesto permite alcanzar consenso.
+instancia_02_presupuesto_limitado,20,5,10,9.6 (48/5),5.8 (29/5),0.1391,ÓPTIMO,HiGHS,3,Presupuesto bajo; no se alcanza consenso.
+instancia_03_costos_extra_altos,24,6,30,30,6.75 (27/4),0.1781,ÓPTIMO,HiGHS,11,Destinos centrales vacíos con costos extra altos.
+instancia_04_costos_decimales,18,6,18.75,18.55 (371/20),2.75 (11/4),0.2128,ÓPTIMO,HiGHS,72,Verifica escalamiento exacto de costos decimales.
+instancia_05_grande,40,8,45,44.95 (899/20),11.7 (117/10),0.4081,ÓPTIMO,HiGHS,51,Mayor número de opiniones y variables.
+ejemplo_ct_00,20,5,0,0,4,0.0086,ÓPTIMO,HiGHS,1,Control: no se permiten movimientos.
+ejemplo_ct_10,20,5,10,9.6 (48/5),2,0.0255,ÓPTIMO,HiGHS,1,Variación intermedia del presupuesto.
+ejemplo_ct_24,20,5,24,24,0,0.0282,ÓPTIMO,HiGHS,1,Presupuesto mínimo observado para consenso en opinión 1.
+instancia_03_sin_extra,24,6,30,30,4.8 (24/5),0.2208,ÓPTIMO,HiGHS,11,Control de la instancia 03 con ce=0.

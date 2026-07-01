@@ -1,0 +1,19 @@
+% Generado automáticamente desde ejemplo_pequeno.pca.
+% No editar manualmente: use el conversor PCA.
+
+n = 4;
+m = 3;
+p = [2, 0, 2];
+
+escala_v = 10;
+v = [0, 5, 10];
+
+escala_costo = 1;
+ce = [0, 0, 0];
+ct = 3;
+
+c = array2d(1..3, 1..3, [
+    0, 1, 3,
+    1, 0, 1,
+    3, 1, 0
+]);

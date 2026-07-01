@@ -1,0 +1,15 @@
+Instancia: instancia_03_costos_extra_altos
+Estado: ÓPTIMO
+Solver: HiGHS
+Distribución final: [3, 12, 0, 0, 9, 0]
+Costo usado: 30
+Polarización óptima: 6.75 (27/4)
+Índice de mediana: 2
+Valor de mediana: 0.15 (3/20)
+Matriz de movimientos:
+0,3,0,0,0,0
+0,0,0,0,0,0
+0,0,0,0,0,0
+0,0,0,0,0,0
+0,3,0,0,0,0
+0,0,0,0,6,0

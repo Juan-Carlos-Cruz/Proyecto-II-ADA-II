@@ -1,0 +1,13 @@
+Instancia: instancia_01_consenso
+Estado: ÓPTIMO
+Solver: HiGHS
+Distribución final: [10, 0, 0, 0]
+Costo usado: 11.7 (117/10)
+Polarización óptima: 0
+Índice de mediana: 1
+Valor de mediana: 0
+Matriz de movimientos:
+0,0,0,0
+0,0,0,0
+3,0,0,0
+0,0,0,0

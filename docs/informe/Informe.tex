@@ -1,0 +1,590 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{graphicx,float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\MinPol}{{\normalfont\scshape MinPol}}
+\newcommand{\pendiente}[1]{\textcolor{red!70!black}{\textbf{PENDIENTE: #1}}}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+
+{\Large\scshape Universidad del Valle\par}
+\vspace{0.25cm}
+{\large Facultad de Ingeniería\par}
+\vspace{0.1cm}
+{\large Escuela de Ingeniería de Sistemas y Computación\par}
+\vspace{0.1cm}
+{\large Análisis de Algoritmos II\par}
+
+\vspace{1.35cm}
+
+{\LARGE\bfseries Informe de Proyecto\par}
+\vspace{0.35cm}
+{\large Proyecto de curso\par}
+
+\vspace{1.1cm}
+
+{\LARGE\bfseries
+El Problema de Minimizar la Polarización\\
+presente en una Población: \MinPol\par}
+
+\vspace{0.7cm}
+\rule{0.82\textwidth}{0.5pt}
+\vspace{1.0cm}
+
+\begin{minipage}{0.84\textwidth}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{2.8cm}X@{}}
+Estudiantes: &
+Juan Carlos Cruz Muñoz (1824389), David\newline
+Alejandro Enciso Gutierrez (2240581), Juan\newline
+Esteban Rodriguez Valencia (2042282),\newline
+Estiven Andres Martinez Granados (2179687)\\[0.65em]
+Profesor: & Jesús Alexander Aranda\\[0.25em]
+Monitor: & Samuel Galindo
+\end{tabularx}
+\end{minipage}
+
+\vfill
+
+{\large Cali, Colombia\par}
+\vspace{0.15cm}
+{\large Junio de 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+La polarización de una población puede interpretarse como el esfuerzo
+necesario para aproximar sus opiniones a un punto central. En este proyecto
+se estudia el problema \MinPol: dada una distribución inicial de personas
+entre opiniones numéricas y un presupuesto limitado para modificar dichas
+opiniones, se deben seleccionar movimientos que minimicen la suma de
+distancias respecto de la mediana ponderada final.
+
+Se construyó un modelo de programación lineal entera (PLE), no mixto ni
+no lineal: todas las variables de decisión son enteras o binarias y los
+productos entre variables se linealizan. El modelo se implementó en MiniZinc
+y se integró con una interfaz gráfica desarrollada en Python y Tkinter. La
+aplicación valida archivos de entrada, conserva exactamente los datos
+decimales, genera el archivo \texttt{DatosProyecto.dzn}, ejecuta el solver y
+presenta la matriz de movimientos, la distribución final, el costo, la
+polarización y la mediana seleccionada.
+
+\section{Descripción del problema}
+
+Sea \(n\) el número de personas y \(m\) el número de opiniones posibles. La
+distribución inicial está dada por \(p_i\), mientras que \(v_i\in[0,1]\)
+representa el valor de la opinión \(i\). Mover una persona desde \(i\) hasta
+\(j\) tiene costo base \(c_{i,j}\). Cuando la opinión de destino estaba vacía
+inicialmente, es decir \(p_j=0\), se suma el costo extra \(ce_j\).
+
+El costo de mover \(x_{i,j}\) personas es:
+
+\[
+x_{i,j}\left[
+c_{i,j}\left(1+\frac{p_i}{n}\right)
++\mathbf{1}_{p_j=0}ce_j
+\right].
+\]
+
+El factor \(1+p_i/n\) hace que resulte más costoso intervenir grupos de
+origen grandes. El costo extra depende exclusivamente de la distribución
+inicial, no de si la opinión se ocupa posteriormente.
+
+Si \(y_i\) es la cantidad final de personas con opinión \(i\), la
+polarización se define como:
+
+\[
+\operatorname{Pol}(y,v)=
+\sum_{i=1}^{m}y_i\left|v_i-\operatorname{mediana}(y,v)\right|.
+\]
+
+\subsection{Ejemplo del enunciado}
+
+El ejemplo tiene \(n=20\), \(m=5\), \(p=(12,4,0,4,0)\),
+\(v=(0,0.25,0.5,0.75,1)\) y \(ct=20\). Tres salidas factibles son:
+
+\begin{center}
+\begin{tabular}{p{4.4cm}rrp{4cm}}
+\toprule
+Movimientos & Costo & Polarización & Distribución final\\
+\midrule
+Ninguno & 0 & 4 & \([12,4,0,4,0]\)\\
+4 personas de 4 a 2 & 9.6 & 2 & \([12,8,0,0,0]\)\\
+4 de 2 a 1; 2 de 4 a 1; 2 de 4 a 2 & 19.2 & 0.5 &
+\([18,2,0,0,0]\)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+La tercera salida es óptima. MiniZinc certificó el valor 0.5 y una
+enumeración independiente comprobó las 447 distribuciones finales distintas
+alcanzables bajo el presupuesto. Si el presupuesto aumenta a 24, se puede
+alcanzar consenso en la opinión 1.
+
+\section{Modelo matemático}
+
+La formulación se presenta mediante los cinco componentes explicados también
+en el video: conjuntos e índices, parámetros, variables de decisión,
+restricciones y función objetivo.
+
+\subsection{Conjuntos y parámetros}
+
+Sea \(O=\{1,\ldots,m\}\). Para \(i,j,k\in O\):
+
+\begin{itemize}[nosep]
+    \item \(n\in\mathbb{N}\): población total.
+    \item \(p_i\in\{0,\ldots,n\}\): población inicial en la opinión \(i\),
+    con \(\sum_i p_i=n\).
+    \item \(v_i\in[0,1]\): valor de la opinión.
+    \item \(c_{i,j}\ge0\): costo base por movimiento.
+    \item \(ce_j\ge0\): costo extra del destino inicialmente vacío.
+    \item \(ct\ge0\): presupuesto.
+\end{itemize}
+
+Se define el parámetro binario \(e_j=1\) si \(p_j=0\), y \(e_j=0\) en caso
+contrario. El costo unitario efectivo es:
+
+\[
+a_{i,j}=c_{i,j}\left(1+\frac{p_i}{n}\right)+e_jce_j.
+\]
+
+\subsection{Variables}
+
+\begin{itemize}[nosep]
+    \item \(x_{i,j}\in\{0,\ldots,n\}\): personas que pasan de \(i\) a \(j\).
+    \item \(y_i\in\{0,\ldots,n\}\): población final en \(i\).
+    \item \(z_k\in\{0,1\}\): selección de \(v_k\) como mediana.
+    \item \(q_{i,k}\in\{0,\ldots,n\}\): linealización de \(y_i z_k\).
+\end{itemize}
+
+\subsection{Restricciones}
+
+No se modela como movimiento permanecer en la misma opinión:
+
+\[
+x_{i,i}=0 \qquad \forall i\in O.
+\]
+
+No pueden salir más personas de las existentes inicialmente:
+
+\[
+\sum_{\substack{j\in O\\j\ne i}}x_{i,j}\le p_i
+\qquad \forall i\in O.
+\]
+
+La distribución final se obtiene mediante balance:
+
+\[
+y_i=p_i-\sum_{\substack{j\in O\\j\ne i}}x_{i,j}
++\sum_{\substack{j\in O\\j\ne i}}x_{j,i}
+\qquad \forall i\in O,
+\]
+
+\[
+\sum_{i\in O}y_i=n.
+\]
+
+La restricción presupuestaria es:
+
+\[
+\sum_{i\in O}\sum_{\substack{j\in O\\j\ne i}}
+a_{i,j}x_{i,j}\le ct.
+\]
+
+Para elegir exactamente una mediana:
+
+\[
+\sum_{k\in O}z_k=1.
+\]
+
+El producto \(q_{i,k}=y_i z_k\) se linealiza con:
+
+\[
+\begin{aligned}
+q_{i,k}&\le y_i,\\
+q_{i,k}&\le nz_k,\\
+q_{i,k}&\ge y_i-n(1-z_k),\\
+q_{i,k}&\ge0.
+\end{aligned}
+\qquad \forall i,k\in O.
+\]
+
+\subsection{Función objetivo}
+
+\[
+\min \quad
+P=\sum_{i\in O}\sum_{k\in O}|v_i-v_k|q_{i,k}.
+\]
+
+Para una distribución final fija, el valor que minimiza la suma de
+desviaciones absolutas es una mediana ponderada. Por eso la minimización
+conjunta sobre \(x\) y \(z\) selecciona automáticamente una mediana válida.
+En una población par puede existir un intervalo de medianas; alguno de sus
+extremos coincide con un \(v_k\) y conserva el mismo valor objetivo.
+
+\section{Justificación del modelo}
+
+Cada matriz entera \(x\) representa directamente los esfuerzos solicitados.
+La restricción de salida evita reutilizar personas que llegaron desde otra
+opinión y garantiza que cada individuo se mueva a lo sumo una vez. Las
+ecuaciones de balance conservan la población. La restricción de presupuesto
+reproduce literalmente la fórmula del enunciado, incluido el costo extra por
+persona para destinos inicialmente vacíos.
+
+La linealización de la mediana es exacta porque \(0\le y_i\le n\). Si
+\(z_k=0\), las restricciones fuerzan \(q_{i,k}=0\); si \(z_k=1\), fuerzan
+\(q_{i,k}=y_i\). Por tanto, el objetivo es exactamente la polarización
+respecto del valor seleccionado.
+
+En consecuencia, toda solución de \MinPol puede representarse en el modelo,
+y toda solución óptima del modelo proporciona movimientos válidos con la
+menor polarización posible.
+
+\section{Detalles importantes de implementación}
+
+\subsection{Escalamiento entero}
+
+Los archivos PCA admiten decimales, pero el modelo utiliza enteros escalados
+para evitar errores de representación binaria. Si \(S_v\) y \(S_c\) son
+potencias de diez apropiadas:
+
+\[
+V_i=S_vv_i,\quad C_{i,j}=S_cc_{i,j},\quad
+CE_j=S_cce_j,\quad CT=S_cct.
+\]
+
+El costo unitario se multiplica además por \(n\):
+
+\[
+U_{i,j}=C_{i,j}(n+p_i)+e_jCE_jn.
+\]
+
+MiniZinc impone
+
+\[
+\sum_{i,j:i\ne j}U_{i,j}x_{i,j}\le CTn.
+\]
+
+Esta transformación es algebraicamente equivalente al costo original. El
+conversor usa el tipo \texttt{Decimal} de Python y calcula automáticamente
+las escalas mínimas necesarias.
+
+\subsection{Conversión y validación}
+
+El módulo \texttt{pca\_parser.py} verifica:
+
+\begin{itemize}[nosep]
+    \item presencia de las \(6+m\) líneas requeridas;
+    \item positividad de \(n\) y \(m\);
+    \item dimensiones de todos los vectores y de la matriz;
+    \item valores enteros no negativos en \(p\) y \(\sum_i p_i=n\);
+    \item \(0\le v_i\le1\);
+    \item costos y presupuesto no negativos y finitos.
+\end{itemize}
+
+Después genera \texttt{DatosProyecto.dzn}. El ejemplo escrito en el PDF
+omite aparentemente la segunda línea \(m=5\); el archivo utilizado en este
+proyecto incorpora esa línea porque la sección 3.1 la exige explícitamente.
+
+\subsection{Interfaz gráfica}
+
+La interfaz utiliza Tkinter y permite cargar un PCA, inspeccionar los datos,
+generar el DZN y ejecutar \texttt{Proyecto.mzn}. La ejecución se realiza en
+un hilo separado para no bloquear la ventana. Los resultados se presentan
+en formato resumido y también se conserva la salida completa con
+estadísticas. El usuario puede elegir Chuffed, HiGHS o COIN-BC.
+Además, la vista de resultados recalcula y muestra seis comprobaciones:
+dominio entero no negativo, ausencia de automovimientos, disponibilidad por
+origen, balance y conservación de población, presupuesto, y consistencia de
+la mediana con la polarización. Así, el cumplimiento de las restricciones
+puede inspeccionarse directamente sin interpretar la salida técnica.
+
+\subsection{Portabilidad y decisión sobre Docker}
+
+La aplicación usa únicamente la biblioteca estándar de Python para su
+interfaz y lógica de ejecución; MiniZinc es la única dependencia externa de
+producción. El entorno se comprueba con:
+
+\begin{center}
+\texttt{python3 }\path{ProyectoGUIFuentes/verificar_entorno.py}
+\end{center}
+
+Este comando revisa Python, Tkinter, MiniZinc y los solvers compatibles. El
+\texttt{Readme.txt} incluye instrucciones para Windows, macOS y Linux y
+permite indicar una instalación no estándar mediante
+\texttt{MINIZINC\_EXECUTABLE}.
+
+Se evaluó Docker, pero no se adoptó como mecanismo principal: Tkinter requiere
+acceso al sistema gráfico y a los diálogos nativos. Exponer una GUI desde un
+contenedor requiere configuraciones diferentes para X11, Wayland y Docker
+Desktop. Un contenedor sería útil para pruebas automáticas sin interfaz, pero
+para el entregable gráfico la ejecución nativa es más directa y portable.
+
+\section{Análisis de Branch and Bound}
+
+Branch and Bound mantiene una solución entera incumbente que actúa como cota
+superior en un problema de minimización. La relajación de cada nodo
+proporciona una cota inferior. Un nodo se poda cuando es infactible, cuando
+su cota no puede mejorar al incumbente o cuando produce una solución entera.
+La optimalidad se demuestra cuando no quedan nodos cuya cota pueda mejorar
+la mejor solución.
+
+\subsection{Ejemplo pequeño explicado paso a paso}
+
+Se construyó la instancia reproducible
+\texttt{DatosProyecto/branch\_and\_bound/ejemplo\_pequeno.pca}, con
+\(n=4\), \(m=3\), \(p=(2,0,2)\), \(v=(0,0.5,1)\), \(ce=(0,0,0)\),
+\(ct=3\) y
+
+\[
+C=\begin{pmatrix}
+0&1&3\\
+1&0&1\\
+3&1&0
+\end{pmatrix}.
+\]
+
+Sin movimientos, la polarización es 2. Una solución óptima mueve una persona
+de la opinión 1 a la 2 y una de la 3 a la 2. Su costo es
+\(1(1+2/4)+1(1+2/4)=3\), la distribución final es \([1,2,1]\), la mediana
+es 0.5 y la polarización es 1.
+
+La traza detallada de HiGHS comienza con cota inferior 0. Una heurística
+encuentra un incumbente de objetivo escalado 20; luego los cortes mejoran el
+incumbente a 10 y la cota a 5. Finalmente la cota alcanza 10, queda
+\(LB=UB=10\) y la brecha es 0\,\%. Como la escala de opiniones es 10, esos
+objetivos corresponden a polarizaciones 2 y 1. El preprocesamiento y los
+cortes cerraron la brecha en el nodo raíz; en esta ejecución no fue
+necesario crear ramas adicionales.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{docs/informe/assets/arbol_bb_pequeno.pdf}
+\caption{Evolución de cotas e incumbentes en la instancia pequeña.}
+\end{figure}
+
+Esta ejecución ilustra las tres decisiones de poda: una relajación
+infactible elimina el nodo; una cota \(LB\ge UB\) elimina un nodo incapaz de
+mejorar el incumbente; y una solución entera actualiza el incumbente. En el
+caso concreto, la tercera situación y los cortes bastaron para cerrar la
+raíz.
+
+\subsection{Ejemplo de mayor búsqueda}
+
+En el ejemplo del enunciado, HiGHS resolvió el modelo en el nodo raíz: el
+preprocesamiento, la relajación y los cortes fueron suficientes para obtener
+y certificar el objetivo escalado 50. COIN-BC reportó también cero nodos
+adicionales. Chuffed mostró una búsqueda discreta más extensa:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Indicador & Valor\\
+\midrule
+Nodos & 169\\
+Fallos & 83\\
+Reinicios & 17\\
+Profundidad máxima & 8\\
+Propagaciones & 13\,480\\
+Backjumps & 5\\
+Objetivo escalado & 50\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Después de encontrar 50, Chuffed añadió implícitamente la exigencia de
+buscar una solución con objetivo menor. La salida final indica que la
+búsqueda con límite 49 no tiene solución, lo cual prueba el óptimo. Los
+árboles cambian entre solvers porque cada uno usa presolve, variables de
+ramificación, cortes, aprendizaje y reinicios diferentes. Por ello el número
+de nodos no debe compararse sin identificar solver, versión y configuración.
+
+Para reproducir la visualización interactiva del árbol en MiniZinc IDE se
+debe abrir \texttt{Proyecto.mzn}, asociar
+\texttt{DatosProyecto/ejemplos/ejemplo\_pdf.dzn}, elegir \textit{Gecode Gist} y
+ejecutar. La captura debe conservar el nombre del solver y el resumen de
+nodos para que la evidencia sea trazable a esta instancia.
+
+Se realizó este procedimiento con MiniZinc 2.9.7 y Gecode Gist 6.3.0. La
+búsqueda produjo tres soluciones progresivamente mejores, exploró 23 nodos,
+registró ocho fallos y alcanzó profundidad máxima 14. La
+Figura~\ref{fig:gist-mayor} es la exportación directa del árbol generado por
+Gist, no una reconstrucción manual.
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.68\textheight]{docs/informe/assets/arbol_minizinc_instancia_mayor.png}
+\caption{Árbol real de Gecode Gist para el ejemplo del enunciado
+(\(n=20\), \(m=5\)).}
+\label{fig:gist-mayor}
+\end{figure}
+
+Los círculos azules representan nodos donde la búsqueda todavía ramifica;
+los cuadrados rojos son ramas que terminan en fallo y, por tanto, se podan;
+los rombos verdes corresponden a soluciones factibles anteriores y el rombo
+naranja identifica la última solución encontrada, que en Branch and Bound es
+la mejor incumbente conocida. Por ejemplo, desde la raíz Gist continúa por el
+hijo izquierdo, mientras el hijo derecho termina inmediatamente en un
+cuadrado rojo: las restricciones propagadas hacen inviable esa alternativa y
+no se generan descendientes. En la parte inferior, una rama azul vuelve a
+separar alternativas y alcanza hojas de solución; al hallar una mejor, su
+objetivo se convierte en la nueva cota incumbente. La búsqueda continúa sobre
+las ramas azules restantes hasta demostrar que ninguna puede producir una
+polarización menor que 0.5.
+
+\section{Pruebas realizadas}
+
+Las pruebas se ejecutaron con MiniZinc 2.9.7 y HiGHS 1.14.0. Los tiempos
+corresponden al solver y son mediciones puntuales.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+Instancia & \(n\) & \(m\) & \(ct\) & Costo & Polarización & Tiempo (s) & Nodos\\
+\midrule
+Ejemplo PDF & 20 & 5 & 20 & 19.2 & 0.5 & 0.0263 & 1\\
+Instancia 1 & 10 & 4 & 12 & 11.7 & 0 & 0.0117 & 1\\
+Instancia 2 & 20 & 5 & 10 & 9.6 & 5.8 & 0.1391 & 3\\
+Instancia 3 & 24 & 6 & 30 & 30 & 6.75 & 0.1781 & 11\\
+Instancia 4 & 18 & 6 & 18.75 & 18.55 & 2.75 & 0.2128 & 72\\
+Instancia 5 & 40 & 8 & 45 & 44.95 & 11.7 & 0.4081 & 51\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Todos los estados fueron óptimos: HiGHS reportó igualdad entre el objetivo
+incumbente y la cota. Además se ejecutaron pruebas unitarias del parser,
+el escalamiento, las validaciones, el procesamiento de resultados y la
+comprobación independiente de restricciones.
+
+La batería completa se reproduce con
+\texttt{python3 Pruebas/ejecutar\_pruebas.py}. Después,
+\texttt{python3 Pruebas/verificar\_soluciones.py} recalcula cada solución sin
+confiar en las etiquetas impresas por MiniZinc: comprueba dominio, diagonal,
+disponibilidad, balance, conservación, costo, presupuesto y polarización
+mínima respecto de todos los valores candidatos a mediana.
+
+\section{Análisis de resultados}
+
+\subsection[Variación de m]{Variación de \(m\)}
+
+El modelo tiene dos familias principales de \(m^2\) variables: movimientos
+\(x\) y productos auxiliares \(q\). Su tamaño crece cuadráticamente. Sin
+embargo, los nodos no crecen de manera monótona: la instancia 4 con seis
+opiniones necesitó 72 nodos, mientras la instancia 5 con ocho necesitó 51.
+La simetría, los costos, la holgura y la cantidad de soluciones cercanas al
+óptimo también determinan la dificultad.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{docs/informe/assets/nodos_instancias.png}
+\caption{Nodos de Branch and Bound en las cinco instancias.}
+\end{figure}
+
+\subsection{Variación del presupuesto}
+
+En el ejemplo, la polarización óptima pasa de 4 con \(ct=0\), a 2 con
+\(ct=10\), 0.5 con \(ct=20\) y 0 con \(ct=24\). Aumentar el presupuesto no
+puede empeorar el óptimo porque amplía el conjunto factible. La mejora puede
+ser escalonada porque las personas son indivisibles.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{docs/informe/assets/presupuesto_polarizacion.png}
+\caption{Presupuesto frente a polarización óptima.}
+\end{figure}
+
+\subsection{Consenso y costos extra}
+
+La instancia 1 alcanza consenso con costo 11.7. El ejemplo requiere
+presupuesto 24 para lograrlo. En las demás configuraciones, concentrar toda
+la población en una opinión excede el presupuesto.
+
+La instancia 3 obtuvo polarización 6.75 cuando los destinos centrales vacíos
+tenían costo extra 12. Al fijar \(ce=0\), la polarización cayó a 4.8 y el
+solver utilizó las opiniones centrales. El costo extra puede cambiar tanto
+los movimientos como la mediana final.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{docs/informe/assets/impacto_costo_extra.png}
+\caption{Resultado de la instancia 3 con y sin costo extra.}
+\end{figure}
+
+\subsection{Bondades, falencias, eficiencia y optimalidad}
+
+\textbf{Bondades.} La formulación es genérica respecto de \(n\) y \(m\),
+preserva exactamente los decimales mediante escalamiento entero y mantiene
+lineales tanto el presupuesto como la función objetivo. La linealización
+\(q_{i,k}=y_i z_k\) permite seleccionar una mediana ponderada sin depender de
+una función no lineal ni de un solver específico.
+
+\textbf{Falencias.} Las familias \(x\) y \(q\) contienen \(m^2\) variables,
+y la linealización de \(q\) añade tres desigualdades por par \((i,k)\). Por
+ello, memoria y tiempo pueden crecer rápidamente cuando aumenta \(m\).
+Además, el escalamiento con muchos decimales produce coeficientes enteros
+grandes y puede acercarse a los límites numéricos del backend. El modelo no
+rompe todas las simetrías que aparecen cuando varias opiniones tienen el
+mismo valor o costo.
+
+\textbf{Eficiencia.} En las instancias probadas, HiGHS tardó entre 0.0117 y
+0.4081 segundos y exploró entre 1 y 72 nodos. No se observa crecimiento
+monótono con \(m\): la estructura de costos, la simetría y la holgura del
+presupuesto influyen además del tamaño cuadrático del modelo. Las
+validaciones previas y el uso de coeficientes enteros evitan enviar al solver
+entradas inválidas o aproximadas.
+
+\textbf{Optimalidad.} El modelo no usa una heurística para decidir el valor
+final: los solvers completan una búsqueda exacta. En HiGHS, la igualdad entre
+objetivo primal y cota dual y una brecha de 0\,\% certifica el óptimo. En
+Chuffed, después del incumbente se demuestra que no existe una solución con
+objetivo entero escalado estrictamente menor. Estas certificaciones, junto
+con las pruebas sobre varias instancias, sustentan la optimalidad de las
+soluciones informadas.
+
+\section{Conclusiones}
+
+\begin{enumerate}
+    \item El problema \MinPol puede representarse exactamente mediante un
+    modelo entero lineal al seleccionar la mediana con variables binarias y
+    linealizar los productos correspondientes.
+    \item El escalamiento entero conserva los decimales de entrada y evita
+    depender de tolerancias de punto flotante en la formulación.
+    \item El presupuesto controla directamente la reducción posible de la
+    polarización; el consenso aparece únicamente cuando existe una
+    concentración completa cuyo costo no excede \(ct\).
+    \item Los costos extra protegen opiniones inicialmente vacías y pueden
+    impedir que las opiniones centrales, aunque cercanas a la mediana,
+    formen parte de la solución.
+    \item El número de opiniones incrementa el tamaño cuadráticamente, pero
+    la dificultad efectiva depende también de la estructura de costos y de
+    la simetría.
+    \item Las diez pruebas de integración y las ocho pruebas unitarias
+    respaldan la corrección del modelo, el conversor, la comprobación de
+    restricciones y la presentación de resultados.
+\end{enumerate}
+
+\section{Video explicativo}
+
+\pendiente{reemplazar este texto por el enlace público o institucional al
+video de máximo 15 minutos antes de entregar.}
+
+\end{document}
