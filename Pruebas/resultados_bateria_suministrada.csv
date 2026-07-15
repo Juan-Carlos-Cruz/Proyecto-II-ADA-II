@@ -1,0 +1,31 @@
+instancia,n,m,ct,maxM,costo_usado,movimientos,polarizacion,tiempo_solver_s,nodos,solver,estado,detalle
+MinPol1.mpl,5,5,16.38,5,6.5988 (16497/2500),5,0.09 (9/100),0.0952,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol2.mpl,5,5,75.43,39,7.7916 (19479/2500),4,0,0.1057,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol3.mpl,5,10,128.46,140,12.1116 (30279/2500),11,0,0.6813,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol4.mpl,10,5,38.74,19,23.8851 (238851/10000),11,0,0.1162,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol5.mpl,10,5,29.35,9,18.6166 (93083/5000),9,0.482 (241/500),0.1589,20,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol6.mpl,20,5,22.3,26,20.5868 (51467/2500),22,0.003 (3/1000),0.1384,10,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol7.mpl,35,5,8.44,20,7.939628571 (277887/35000),11,3.085 (617/200),0.1929,3,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol8.mpl,35,5,3.43,16,2.908571429 (509/175),12,4.323 (4323/1000),0.1744,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol9.mpl,50,5,15.37,7,7.94814 (397407/50000),7,5.373 (5373/1000),0.0379,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol10.mpl,50,5,5.85,18,5.59266 (279633/50000),5,9.687 (9687/1000),0.0612,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol11.mpl,50,10,38.02,25,25.93028 (648257/25000),25,10.349 (10349/1000),0.2415,19,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol12.mpl,50,10,18.78,42,18.77594 (938797/50000),42,3.721 (3721/1000),0.3563,150,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol13.mpl,75,10,68.39,69,68.28957333 (2560859/37500),69,12.417 (12417/1000),0.2233,36,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol14.mpl,75,10,26.25,71,26.22126667 (393319/15000),71,6.55 (131/20),0.6574,192,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol15.mpl,100,5,52.42,35,50.01823 (5001823/100000),35,10.342 (5171/500),0.1432,33,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol16.mpl,100,5,5.82,38,2.7312 (1707/625),38,18.786 (9393/500),0.1832,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol17.mpl,100,10,5.05,43,4.81794 (240897/50000),43,14.172 (3543/250),0.5679,20,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol18.mpl,100,10,8.31,42,6.16068 (154017/25000),42,17.898 (8949/500),0.4910,192,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol19.mpl,100,20,22.44,14,13.92211 (1392211/100000),14,19.603 (19603/1000),2.6463,48,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol20.mpl,100,20,1.67,4,1.62614 (81307/50000),4,23.567 (23567/1000),5.1389,21,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol21.mpl,120,3,38.76,44,32.66826667 (61253/1875),44,24.176 (3022/125),0.0294,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol22.mpl,150,3,18.37,9,12.80982 (640491/50000),9,31.135 (6227/200),0.0216,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol23.mpl,150,3,36.29,17,7.48972 (187243/25000),17,3.822 (1911/500),0.0075,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol24.mpl,200,3,3.82,9,2.26497 (226497/100000),1,29.902 (14951/500),0.0074,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol25.mpl,180,3,15.37,25,15.02111111 (13519/900),20,24.775 (991/40),0.0132,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol26.mpl,100,5,80.76,20,70.025 (2801/40),20,30.748 (7687/250),0.1648,5,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol27.mpl,100,5,63.68,30,63.049 (63049/1000),30,25.021 (25021/1000),0.0852,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.
+MinPol28.mpl,,,,,,,,,,HiGHS,ENTRADA INVÁLIDA ESPERADA,"Línea 3: la suma de p es 125, pero n es 100."
+MinPol29.mpl,,,,,,,,,,HiGHS,ENTRADA INVÁLIDA ESPERADA,"Línea 3: la suma de p es 125, pero n es 100."
+MinPol30.mpl,100,5,1000.0,1000,184.575 (7383/40),200,0,0.0319,1,HiGHS,ÓPTIMO,Todas las comprobaciones independientes pasaron.

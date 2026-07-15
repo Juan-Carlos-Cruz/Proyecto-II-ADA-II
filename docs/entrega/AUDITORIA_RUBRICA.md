@@ -1,6 +1,6 @@
 # Auditoría frente al enunciado y la rúbrica
 
-Fecha de revisión: 1 de julio de 2026.
+Fecha de revisión: 13 de julio de 2026.
 
 Esta auditoría separa funcionalidad y evidencia de entrega. Una función
 correcta no obtiene el máximo si la rúbrica exige además una captura, video o
@@ -10,9 +10,9 @@ sustentación.
 
 | Criterio | Máximo | Estado defendible | Para llegar al máximo |
 |---|---:|---:|---|
-| 1. Branch and Bound | 8 | 8 | Evidencia completa: explicación, caso pequeño y árbol real de Gecode Gist. |
-| 2. Formulación | 24 | 24 | Mantener consistencia entre informe y MiniZinc. |
-| 3. Modelo y pruebas | 48 | 48 | Conservar salidas y versiones para reproducibilidad. |
+| 1. Branch and Bound | 8 | 5 | Falta una captura real del árbol actual en Gecode Gist. |
+| 2. Formulación | 24 | 24 | Incluye parámetros, variables, restricciones, objetivo y uso de enteros. |
+| 3. Modelo y pruebas | 48 | 48 | Conservar salidas, versiones y argumentos de eficiencia/optimalidad. |
 | 4. Sustentación | 10 | No evaluable todavía | Todos deben poder defender modelo, B&B, pruebas e interfaz. |
 | 5. Interfaz | 10 | 2 sin video; 10 con el video correcto | Grabarlo, incluir a todos y poner el enlace en el PDF. |
 
@@ -32,20 +32,20 @@ Evidencia existente:
 
 Evidencia del visualizador:
 
-- Se ejecutó el ejemplo mayor con MiniZinc 2.9.7 y Gecode Gist 6.3.0.
-- Gist reportó 23 nodos, ocho fallos, tres soluciones y profundidad máxima 14.
-- El árbol se exportó directamente desde Gist a
-  `docs/informe/assets/arbol_minizinc_instancia_mayor.pdf`.
-- El informe incorpora su versión PNG y explica nodos de ramificación, hojas
-  fallidas, soluciones y actualización de la cota incumbente.
+- La ejecución reproducible con Gecode 6.3.0 reporta 50 nodos, 11 fallos,
+  13 soluciones y profundidad máxima 18.
+- La captura PNG disponible sólo muestra la raíz y no constituye evidencia
+  del árbol. Por eso fue retirada del informe.
+- Falta ejecutar Gecode Gist con el modelo y el DZN actuales, desplegar el
+  árbol y guardar una captura que muestre el solver y sus estadísticas.
 
 ## 2. Formulación matemática
 
-- [x] Parámetros \(n,m,p,v,c,ce,ct\), dominios y \(\sum p_i=n\).
+- [x] Parámetros \(n,m,p,v,c,ce,ct,maxM\), dominios y \(\sum p_i=n\).
 - [x] Movimientos enteros \(x\), distribución \(y\), selección binaria \(z\)
   y producto linealizado \(q\).
 - [x] Restricciones de dominio, diagonal, disponibilidad, balance,
-  conservación, presupuesto y selección de mediana.
+  conservación, presupuesto, límite de movimientos y selección de mediana.
 - [x] Objetivo de distancias absolutas a la mediana.
 - [x] Identificación explícita como programación lineal entera.
 - [x] Justificación de adecuación en ambos sentidos.
@@ -57,16 +57,22 @@ ponderada. Esta justificación debe conservarse en el informe.
 ## 3. MiniZinc, pruebas y análisis
 
 - [x] `Proyecto.mzn` implementa el modelo genérico.
-- [x] El parser valida las \(6+m\) líneas de la sección 3.1.
+- [x] El parser valida las \(7+m\) líneas de la sección 3.1 actualizada.
+- [x] La entrada se lee como `.mpl` con matriz de costos antes de `ct`.
 - [x] La conversión DZN conserva exactamente los decimales.
+- [x] El DZN generado incluye `maxM` y el modelo restringe
+  \(\sum |j-i|x_{i,j}\le maxM\).
 - [x] Hay cinco instancias propias con entrada, DZN y óptimo.
-- [x] La batería cubre diez configuraciones.
-- [x] Una verificación independiente recalcula restricciones y objetivo.
+- [x] La batería principal cubre diez configuraciones.
+- [x] Se procesaron las 30 entradas suministradas: 28 válidas se resolvieron
+  con optimalidad y pasaron las comprobaciones independientes; MinPol28 y
+  MinPol29 se rechazaron porque declaran \(n=100\) y \(\sum p_i=125\).
+- [x] Una verificación independiente recalcula restricciones, movimientos y
+  objetivo.
 - [x] El informe analiza bondades, falencias, eficiencia y optimalidad.
 - [x] Se estudian tamaño, presupuesto y costo extra.
-- [ ] Si el campus publicó instancias adicionales a la del enunciado, deben
-  agregarse a la tabla antes de entregar; no estaban entre los adjuntos
-  auditados.
+- [x] El resumen de la batería suministrada está en el informe y el detalle
+  reproducible está en `Pruebas/resultados_bateria_suministrada.csv`.
 
 Mejora recomendable: repetir los tiempos y reportar mediana y dispersión. Las
 mediciones actuales son puntuales y el informe lo declara correctamente.
@@ -76,6 +82,7 @@ mediciones actuales son puntuales y el informe lo declara correctamente.
 Cada integrante debería poder:
 
 - derivar el costo escalado \(U_{i,j}\);
+- explicar el conteo \(|j-i|\) usado por `maxM`;
 - justificar balances y la linealización \(y_i z_k\);
 - explicar por qué las desviaciones absolutas seleccionan una mediana;
 - leer cota, incumbente, brecha y poda;
@@ -84,11 +91,12 @@ Cada integrante debería poder:
 
 ## 5. Interfaz
 
-- [x] Lee PCA según la sección 3.1.
+- [x] Lee MPL según la sección 3.1 actualizada.
 - [x] Genera exactamente `DatosProyecto.dzn`.
 - [x] Ejecuta `Proyecto.mzn`.
-- [x] Muestra movimientos, distribución, costo, polarización y mediana.
-- [x] Muestra seis verificaciones de restricciones.
+- [x] Muestra movimientos, distribución, costo, polarización, mediana y
+  movimientos usados.
+- [x] Muestra siete verificaciones de restricciones, incluida `maxM`.
 - [x] Presenta estadísticas, cota y salida técnica.
 - [x] Ejecuta el solver sin bloquear la ventana.
 - [ ] Falta el video enlazado desde el PDF.
@@ -114,6 +122,6 @@ el riesgo operativo.
 - [x] Informe con modelo, implementación, B&B, pruebas, análisis y conclusiones.
 - [x] Tres salidas factibles y óptimo del ejemplo.
 - [x] Nombres, códigos, profesor y monitor en el informe.
-- [x] Árbol real exportado desde Gecode Gist.
+- [ ] Árbol real exportado desde Gecode Gist con el modelo y DZN actuales.
 - [ ] Video y enlace en el PDF.
 - [ ] ZIP final con copia raíz de `Informe.pdf`.

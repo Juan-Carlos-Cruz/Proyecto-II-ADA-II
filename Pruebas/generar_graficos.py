@@ -160,7 +160,7 @@ def node_chart() -> None:
         "Nodos de Branch and Bound por instancia",
         "Nodos HiGHS",
         ["I1 m=4", "I2 m=5", "I3 m=6", "I4 m=6", "I5 m=8"],
-        [1, 3, 11, 72, 51],
+        [1, 9, 11, 76, 15],
         ["#4472C4"],
     )
 
@@ -179,7 +179,7 @@ def extra_cost_chart() -> None:
         "Influencia del costo extra",
         "Polarización óptima",
         ["ce central=12", "ce=0"],
-        [6.75, 4.8],
+        [6.75, 6],
         ["#C55A11", "#70AD47"],
     )
 

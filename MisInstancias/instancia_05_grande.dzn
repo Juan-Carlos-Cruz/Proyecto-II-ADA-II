@@ -1,5 +1,5 @@
-% Generado automáticamente desde instancia_05_grande.pca.
-% No editar manualmente: use el conversor PCA.
+% Generado automáticamente desde instancia_05_grande.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 40;
 m = 8;
@@ -11,6 +11,7 @@ v = [0, 10, 25, 40, 60, 75, 90, 100];
 escala_costo = 1;
 ce = [1, 2, 4, 3, 3, 4, 2, 1];
 ct = 45;
+maxM = 25;
 
 c = array2d(1..8, 1..8, [
     0, 1, 2, 4, 6, 7, 9, 10,

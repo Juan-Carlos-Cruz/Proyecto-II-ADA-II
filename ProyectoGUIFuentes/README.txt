@@ -27,8 +27,8 @@ ui/dialogs.py
 ui/theme.py
     Colores y estilos ttk compartidos.
 
-pca_parser.py
-    Parser, validaciones y conversión exacta de PCA a DZN.
+mpl_parser.py
+    Parser, validaciones y conversión exacta de MPL a DZN.
 
 result_parser.py
     Interpreta la salida etiquetada de Proyecto.mzn.
@@ -39,7 +39,7 @@ compliance.py
 minizinc_runner.py
     Ejecuta MiniZinc mediante subprocess con límite de tiempo.
 
-convertir_pca.py
+convertir_mpl.py
     Conversor independiente para línea de comandos.
 
 tests/
@@ -58,7 +58,7 @@ ARQUITECTURA
               └── ui/theme.py
 
     Servicios independientes:
-       ├── pca_parser.py
+       ├── mpl_parser.py
        ├── result_parser.py
        ├── compliance.py
        └── minizinc_runner.py
@@ -69,7 +69,7 @@ Ejecución:
 
 Conversión sin interfaz:
 
-    python3 ProyectoGUIFuentes/convertir_pca.py entrada.pca salida.dzn
+    python3 ProyectoGUIFuentes/convertir_mpl.py entrada.mpl salida.dzn
 
 Pruebas:
 

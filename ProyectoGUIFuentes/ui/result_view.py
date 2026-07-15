@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from compliance import evaluate_compliance
-from pca_parser import MinPolInstance
+from mpl_parser import MinPolInstance
 from result_parser import MinPolResult, fraction_text
 
 from .components import (
@@ -38,18 +38,20 @@ class ResultView(ttk.Frame):
         self.values = {
             "polarization": tk.StringVar(value="—"),
             "cost": tk.StringVar(value="—"),
+            "movements": tk.StringVar(value="—"),
             "median": tk.StringVar(value="—"),
             "time": tk.StringVar(value="—"),
         }
 
         cards = ttk.Frame(self, style="Surface.TFrame")
         cards.grid(row=0, column=0, sticky="ew", pady=(0, 16))
-        for index in range(4):
+        for index in range(5):
             cards.columnconfigure(index, weight=1, uniform="result_cards")
         for column, (title, key) in enumerate(
             (
                 ("Polarización", "polarization"),
                 ("Costo utilizado", "cost"),
+                ("Movimientos", "movements"),
                 ("Mediana", "median"),
                 ("Tiempo solver", "time"),
             )
@@ -80,7 +82,7 @@ class ResultView(ttk.Frame):
         checks.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(7, 0))
         for column in range(2):
             checks.columnconfigure(column, weight=1, uniform="compliance")
-        for index in range(6):
+        for index in range(7):
             status = tk.StringVar(value="○")
             text = tk.StringVar(value="Pendiente")
             item = ttk.Frame(checks, style="Compliance.TFrame")
@@ -172,6 +174,9 @@ class ResultView(ttk.Frame):
         """
         self.values["polarization"].set(fraction_text(result.polarization))
         self.values["cost"].set(fraction_text(result.total_cost))
+        self.values["movements"].set(
+            f"{result.total_movements}/{instance.max_movs}"
+        )
         self.values["median"].set(
             f"v{result.median_index} = {fraction_text(result.median_value)}"
         )

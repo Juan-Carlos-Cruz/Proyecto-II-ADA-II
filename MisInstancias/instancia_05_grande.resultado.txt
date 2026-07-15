@@ -1,17 +1,19 @@
 Instancia: instancia_05_grande
 Estado: ÓPTIMO
 Solver: HiGHS
-Distribución final: [8, 4, 0, 13, 4, 0, 1, 10]
-Costo usado: 44.95 (899/20)
+Distribución final: [10, 3, 0, 13, 4, 0, 0, 10]
+Costo usado: 44.85 (897/20)
+Movimientos usados: 24
+Máximo de movimientos: 25
 Polarización óptima: 11.7 (117/10)
 Índice de mediana: 4
 Valor de mediana: 0.4 (2/5)
 Matriz de movimientos:
-0,2,0,0,0,0,0,0
-0,0,0,4,0,0,0,0
+0,0,0,0,0,0,0,0
+0,0,0,3,0,0,0,0
 0,0,0,0,0,0,0,0
 0,0,0,0,0,0,0,0
-0,0,0,1,0,0,0,0
 0,0,0,0,0,0,0,0
-0,0,0,4,1,0,0,0
+0,0,0,0,0,0,0,0
+0,0,0,6,0,0,0,0
 0,0,0,0,0,0,0,0

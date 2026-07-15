@@ -1,5 +1,5 @@
-% Generado automáticamente desde instancia_04_costos_decimales.pca.
-% No editar manualmente: use el conversor PCA.
+% Generado automáticamente desde instancia_04_costos_decimales.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 18;
 m = 6;
@@ -11,6 +11,7 @@ v = [0, 10, 35, 65, 90, 100];
 escala_costo = 100;
 ce = [50, 75, 125, 125, 75, 50];
 ct = 1875;
+maxM = 15;
 
 c = array2d(1..6, 1..6, [
     0, 80, 170, 320, 450, 500,

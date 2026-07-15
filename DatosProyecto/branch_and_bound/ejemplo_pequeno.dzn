@@ -1,5 +1,5 @@
-% Generado automáticamente desde ejemplo_pequeno.pca.
-% No editar manualmente: use el conversor PCA.
+% Generado automáticamente desde ejemplo_pequeno.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 4;
 m = 3;
@@ -11,6 +11,7 @@ v = [0, 5, 10];
 escala_costo = 1;
 ce = [0, 0, 0];
 ct = 3;
+maxM = 2;
 
 c = array2d(1..3, 1..3, [
     0, 1, 3,

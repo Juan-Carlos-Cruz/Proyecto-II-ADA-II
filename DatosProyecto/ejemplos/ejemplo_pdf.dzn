@@ -1,5 +1,5 @@
-% Ejemplo de la sección 2.4 del enunciado.
-% El PDF omite por error aparente la línea "5" en su representación .pca.
+% Generado automáticamente desde ejemplo_pdf.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 20;
 m = 5;
@@ -11,6 +11,7 @@ v = [0, 25, 50, 75, 100];
 escala_costo = 1;
 ce = [1, 2, 1, 1, 3];
 ct = 20;
+maxM = 18;
 
 c = array2d(1..5, 1..5, [
     0, 2, 4, 5, 7,

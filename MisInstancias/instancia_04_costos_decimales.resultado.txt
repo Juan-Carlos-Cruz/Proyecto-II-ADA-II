@@ -1,15 +1,17 @@
 Instancia: instancia_04_costos_decimales
 Estado: ÓPTIMO
 Solver: HiGHS
-Distribución final: [0, 1, 13, 0, 1, 3]
-Costo usado: 18.55 (371/20)
+Distribución final: [2, 3, 11, 0, 0, 2]
+Costo usado: 18.66666667 (56/3)
+Movimientos usados: 14
+Máximo de movimientos: 15
 Polarización óptima: 2.75 (11/4)
 Índice de mediana: 3
 Valor de mediana: 0.35 (7/20)
 Matriz de movimientos:
-0,0,3,0,0,0
-0,0,2,0,0,0
+0,0,1,0,0,0
+0,0,0,0,0,0
 0,0,0,0,0,0
 0,0,3,0,0,0
-0,0,2,0,0,0
-0,0,0,0,0,0
+0,0,3,0,0,0
+0,0,1,0,0,0
