@@ -1,5 +1,5 @@
-% Generado automáticamente desde instancia_02_presupuesto_limitado.pca.
-% No editar manualmente: use el conversor PCA.
+% Generado automáticamente desde instancia_02_presupuesto_limitado.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 20;
 m = 5;
@@ -11,6 +11,7 @@ v = [0, 2, 5, 8, 10];
 escala_costo = 1;
 ce = [0, 1, 5, 1, 0];
 ct = 10;
+maxM = 7;
 
 c = array2d(1..5, 1..5, [
     0, 1, 4, 6, 8,

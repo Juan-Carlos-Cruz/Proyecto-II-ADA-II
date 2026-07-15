@@ -24,6 +24,7 @@ int: escala_costo;
 array[OPINIONES, OPINIONES] of int: c;
 array[OPINIONES] of int: ce;
 int: ct;
+int: maxM;
 
 % ---------------------------------------------------------------------------
 % Validaciones estáticas
@@ -39,6 +40,7 @@ constraint forall(i in OPINIONES)(v[i] >= 0 /\ v[i] <= escala_v);
 constraint forall(i, j in OPINIONES)(c[i, j] >= 0);
 constraint forall(j in OPINIONES)(ce[j] >= 0);
 constraint ct >= 0;
+constraint maxM > 0;
 
 % ---------------------------------------------------------------------------
 % Variables de movimientos y distribución final
@@ -67,6 +69,14 @@ constraint forall(i in OPINIONES)(
 
 % Es redundante con los balances, pero documenta y comprueba la conservación.
 constraint sum(i in OPINIONES)(distribucion_final[i]) = n;
+
+% Mover una persona de i a j cuenta como |j-i| movimientos.
+var 0..n * (m - 1): total_movimientos =
+    sum(i, j in OPINIONES where i != j)(
+        abs(j - i) * x[i, j]
+    );
+
+constraint total_movimientos <= maxM;
 
 % ---------------------------------------------------------------------------
 % Costo
@@ -146,6 +156,8 @@ output [
         show(n * escala_costo) ++ "\n",
     "COSTO_TOTAL_NUMERADOR=" ++ show(costo_total_numerador) ++ "\n",
     "COSTO_TOTAL_DENOMINADOR=" ++ show(n * escala_costo) ++ "\n",
+    "TOTAL_MOVIMIENTOS=" ++ show(total_movimientos) ++ "\n",
+    "MAX_MOVIMIENTOS=" ++ show(maxM) ++ "\n",
     "POLARIZACION=" ++ show(polarizacion_escalada) ++ "/" ++
         show(escala_v) ++ "\n",
     "POLARIZACION_ESCALADA=" ++ show(polarizacion_escalada) ++ "\n",

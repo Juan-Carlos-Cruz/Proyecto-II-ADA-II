@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "ProyectoGUIFuentes"))
 sys.path.insert(0, str(ROOT / "Pruebas"))
 
 from ejecutar_pruebas import CASES
-from pca_parser import read_pca
+from mpl_parser import read_mpl
 from result_parser import parse_minizinc_output
 
 
@@ -32,21 +32,21 @@ def exact(value) -> Fraction:
     return Fraction(value)
 
 
-def verify(name, pca_path, output_path) -> None:
+def verify(name, mpl_path, output_path) -> None:
     """Verifica independientemente una solución guardada.
 
     Args:
         name: Nombre legible del caso.
-        pca_path: Ruta de la entrada PCA.
+        mpl_path: Ruta de la entrada MPL.
         output_path: Ruta de la salida original de MiniZinc.
 
     Returns:
         None. Lanza ``AssertionError`` si una condición falla.
 
     Example:
-        >>> # verify("ejemplo", ruta_pca, ruta_salida)
+        >>> # verify("ejemplo", ruta_mpl, ruta_salida)
     """
-    instance = read_pca(pca_path)
+    instance = read_mpl(mpl_path)
     result = parse_minizinc_output(output_path.read_text(encoding="utf-8"), instance.m)
     x = result.movements
 
@@ -77,6 +77,15 @@ def verify(name, pca_path, output_path) -> None:
     assert cost == result.total_cost
     assert cost <= exact(instance.ct)
 
+    total_movements = sum(
+        abs(j - i) * x[i][j]
+        for i in range(instance.m)
+        for j in range(instance.m)
+        if i != j
+    )
+    assert total_movements == result.total_movements
+    assert total_movements <= instance.max_movs
+
     scores = [
         sum(
             final[i] * abs(exact(instance.v[i]) - exact(instance.v[k]))
@@ -102,8 +111,8 @@ def main() -> None:
             python3 Pruebas/verificar_soluciones.py
     """
     output_directory = ROOT / "Pruebas/salidas_solver"
-    for name, pca_path, _, _ in CASES:
-        verify(name, pca_path, output_directory / f"{name}.txt")
+    for name, mpl_path, _, _ in CASES:
+        verify(name, mpl_path, output_directory / f"{name}.txt")
 
 
 if __name__ == "__main__":

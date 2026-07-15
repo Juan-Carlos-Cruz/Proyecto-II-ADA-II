@@ -3,7 +3,7 @@ PROYECTO MINPOL — ANÁLISIS DE ALGORITMOS II
 
 Este proyecto resuelve el problema de minimizar la polarización de una
 población mediante programación lineal entera. A partir de una instancia
-*.pca, la aplicación valida los datos, genera DatosProyecto.dzn, ejecuta el
+*.mpl, la aplicación valida los datos, genera DatosProyecto.dzn, ejecuta el
 modelo genérico Proyecto.mzn y muestra la solución y el cumplimiento de sus
 restricciones.
 
@@ -29,13 +29,13 @@ Ejecutar la interfaz:
 
 Flujo de uso:
 
-1. Presionar "Cargar archivo .pca".
+1. Presionar "Cargar archivo .mpl".
 2. Seleccionar una instancia, por ejemplo:
-   DatosProyecto/ejemplos/ejemplo_pdf.pca.
+   DatosProyecto/ejemplos/ejemplo_pdf.mpl.
 3. Revisar los parámetros y la matriz de costos.
 4. Seleccionar un solver.
 5. Presionar "Resolver instancia".
-6. Revisar la solución, las seis comprobaciones de restricciones y las
+6. Revisar la solución, las siete comprobaciones de restricciones y las
    estadísticas del solver.
 
 La aplicación crea DatosProyecto.dzn en la raíz, ejecuta Proyecto.mzn y
@@ -98,6 +98,8 @@ Parámetros principales:
 - c[i,j]: costo base de mover una persona de i a j.
 - ce[j]: costo extra si la opinión j estaba inicialmente vacía.
 - ct: presupuesto máximo.
+- maxM: máximo de movimientos permitidos, contando cada persona movida de i
+  a j como |j-i| movimientos.
 
 La variable entera x[i,j] indica cuántas personas pasan de la opinión i a la
 j. La variable y[i] representa la población final. El modelo:
@@ -106,6 +108,7 @@ j. La variable y[i] representa la población final. El modelo:
 - limita las salidas por la población inicial de cada opinión;
 - conserva la población mediante ecuaciones de balance;
 - impone que el costo total no supere ct;
+- limita los movimientos totales por distancia a maxM;
 - selecciona una mediana ponderada mediante variables binarias;
 - minimiza la suma de distancias absolutas a esa mediana.
 
@@ -116,7 +119,7 @@ punto flotante. La formulación completa y su justificación están en:
     docs/informe/Informe.pdf
     docs/analisis/ModeloMatematico.md
 
-4. FORMATO DE ENTRADA PCA
+4. FORMATO DE ENTRADA MPL
 -------------------------
 
 Línea 1: n.
@@ -124,22 +127,23 @@ Línea 2: m.
 Línea 3: p, con m enteros separados por comas.
 Línea 4: v, con m valores separados por comas.
 Línea 5: ce, con m valores separados por comas.
-Línea 6: ct.
 Siguientes m líneas: matriz c de m por m.
+Siguiente línea: ct.
+Siguiente línea: MaxMovs.
 
 Los decimales deben usar punto. Las líneas vacías se ignoran.
 
-La representación del ejemplo impreso en el enunciado omite aparentemente
-la línea "5" correspondiente a m. La sección 3.1 sí exige esa línea, por lo
-que DatosProyecto/ejemplos/ejemplo_pdf.pca la incluye.
+La instancia del ejemplo actualizado está en:
+
+    DatosProyecto/ejemplos/ejemplo_pdf.mpl
 
 5. USO SIN INTERFAZ
 -------------------
 
 Convertir una instancia:
 
-    python3 ProyectoGUIFuentes/convertir_pca.py \
-        DatosProyecto/ejemplos/ejemplo_pdf.pca DatosProyecto.dzn
+    python3 ProyectoGUIFuentes/convertir_mpl.py \
+        DatosProyecto/ejemplos/ejemplo_pdf.mpl DatosProyecto.dzn
 
 Ejecutar MiniZinc directamente:
 
@@ -147,7 +151,7 @@ Ejecutar MiniZinc directamente:
         Proyecto.mzn DatosProyecto.dzn
 
 Para el ejemplo se espera una solución óptima con distribución
-[18,2,0,0,0], costo 19.2 y polarización 0.5.
+[18,2,0,0,0], costo 19.2, 14 movimientos de 18 permitidos y polarización 0.5.
 
 6. PRUEBAS Y REPRODUCIBILIDAD
 -----------------------------
@@ -163,6 +167,15 @@ Batería de diez instancias:
 Verificación independiente de restricciones y objetivo:
 
     python3 Pruebas/verificar_soluciones.py
+
+Validación y resolución de las 30 entradas suministradas:
+
+    python3 Pruebas/verificar_bateria_suministrada.py
+
+Este último comando resuelve las 28 entradas válidas y registra en
+Pruebas/resultados_bateria_suministrada.csv el rechazo de MinPol28.mpl y
+MinPol29.mpl: ambas declaran n=100, pero su distribución inicial suma 125.
+Los archivos originales no se modifican.
 
 Regenerar gráficos (requiere Pillow):
 
@@ -186,7 +199,7 @@ DatosProyecto/
     Ejemplo del enunciado, experimentos, caso de Branch and Bound y resultados.
 
 MisInstancias/
-    Cinco instancias del grupo. Cada una incluye PCA, DZN y solución esperada.
+    Cinco instancias del grupo. Cada una incluye MPL, DZN y solución esperada.
 
 ProyectoGUIFuentes/
     Código fuente de la interfaz, validadores, conversores y pruebas unitarias.
@@ -195,7 +208,8 @@ ProyectoGUIFuentes/ui/
     Vistas y componentes Tkinter.
 
 Pruebas/
-    Ejecución reproducible, verificación independiente, CSV y salidas técnicas.
+    Ejecución reproducible, verificación independiente, resultados de la
+    batería suministrada, archivos CSV y salidas técnicas.
 
 docs/informe/
     Fuente LaTeX, PDF compilado y recursos gráficos.
@@ -212,10 +226,10 @@ docs/video/
 8. ARQUITECTURA
 ---------------
 
-    archivo PCA
+    archivo MPL
         |
         v
-    pca_parser.py ----> DatosProyecto.dzn
+    mpl_parser.py ----> DatosProyecto.dzn
         |                       |
         |                       v
         +--------------> Proyecto.mzn + MiniZinc
@@ -223,10 +237,10 @@ docs/video/
                                    v
     interfaz <---- result_parser.py + compliance.py
 
-pca_parser.py valida el formato y escala decimales. minizinc_runner.py ejecuta
+mpl_parser.py valida el formato y escala decimales. minizinc_runner.py ejecuta
 el proceso con límite de tiempo. result_parser.py interpreta la salida.
-compliance.py recalcula costo, balance, presupuesto, mediana y objetivo sin
-confiar únicamente en las etiquetas del solver.
+compliance.py recalcula costo, balance, presupuesto, límite de movimientos,
+mediana y objetivo sin confiar únicamente en las etiquetas del solver.
 
 9. PORTABILIDAD Y DOCKER
 ------------------------
@@ -254,9 +268,9 @@ las instrucciones por sistema ofrecen una ruta más directa y verificable.
 "No existe un solver":
     Ejecutar "minizinc --solvers" y seleccionar en la interfaz uno instalado.
 
-"Archivo PCA inválido":
+"Archivo MPL inválido":
     Revisar el número de líneas, las dimensiones, suma(p)=n, v en [0,1] y
-    costos no negativos.
+    costos no negativos, además de ct >= 0 y MaxMovs > 0.
 
 11. ENTREGA
 -----------

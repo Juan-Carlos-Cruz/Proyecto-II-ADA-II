@@ -9,6 +9,8 @@ from fractions import Fraction
 
 
 class ResultParseError(ValueError):
+    """Indica que la salida de MiniZinc no tiene el formato esperado."""
+
     pass
 
 
@@ -17,6 +19,7 @@ class MinPolResult:
     movements: tuple[tuple[int, ...], ...]
     final_distribution: tuple[int, ...]
     total_cost: Fraction
+    total_movements: int
     polarization: Fraction
     median_index: int
     median_value: Fraction
@@ -109,10 +112,16 @@ def parse_minizinc_output(output: str, m: int) -> MinPolResult:
     except (KeyError, ValueError) as exc:
         raise ResultParseError("El índice de la mediana no es válido.") from exc
 
+    try:
+        total_movements = int(values["TOTAL_MOVIMIENTOS"])
+    except (KeyError, ValueError) as exc:
+        raise ResultParseError("El total de movimientos no es válido.") from exc
+
     return MinPolResult(
         movements=tuple(rows),
         final_distribution=distribution,
         total_cost=_fraction(values, "COSTO_TOTAL"),
+        total_movements=total_movements,
         polarization=_fraction(values, "POLARIZACION"),
         median_index=median_index,
         median_value=_fraction(values, "VALOR_MEDIANA"),

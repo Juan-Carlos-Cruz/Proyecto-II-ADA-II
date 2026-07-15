@@ -77,7 +77,7 @@ class Sidebar(ttk.Frame):
 
         self.load_button = ttk.Button(
             self,
-            text="Cargar archivo .pca",
+            text="Cargar archivo .mpl",
             style="Secondary.TButton",
             command=on_load,
         )
@@ -136,7 +136,7 @@ class Sidebar(ttk.Frame):
         ).grid(row=14, column=0, sticky="sw")
 
     def show_file(self, path: Path) -> None:
-        """Muestra el nombre y ubicación del PCA cargado.
+        """Muestra el nombre y ubicación del MPL cargado.
 
         Args:
             path: Ruta absoluta del archivo.
@@ -145,7 +145,7 @@ class Sidebar(ttk.Frame):
             None.
 
         Example:
-            >>> # panel.show_file(Path("entrada.pca"))
+            >>> # panel.show_file(Path("entrada.mpl"))
         """
         self.file_name.set(path.name)
         self.file_path.set(str(path.parent))

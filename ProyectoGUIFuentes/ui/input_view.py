@@ -5,7 +5,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
 
-from pca_parser import MinPolInstance, decimal_text
+from mpl_parser import MinPolInstance, decimal_text
 
 from .components import MatrixTable, clear_tree, metric_card, tree_with_scrollbars
 
@@ -31,18 +31,20 @@ class InputView(ttk.Frame):
             "n": tk.StringVar(value="—"),
             "m": tk.StringVar(value="—"),
             "ct": tk.StringVar(value="—"),
+            "max_movs": tk.StringVar(value="—"),
             "total": tk.StringVar(value="—"),
         }
 
         cards = ttk.Frame(self, style="Surface.TFrame")
         cards.grid(row=0, column=0, sticky="ew", pady=(0, 16))
-        for index in range(4):
+        for index in range(5):
             cards.columnconfigure(index, weight=1, uniform="input_cards")
         for column, (title, key) in enumerate(
             (
                 ("Población", "n"),
                 ("Opiniones", "m"),
                 ("Presupuesto", "ct"),
+                ("Máx. movimientos", "max_movs"),
                 ("Total en p", "total"),
             )
         ):
@@ -101,6 +103,7 @@ class InputView(ttk.Frame):
         self.values["n"].set(str(instance.n))
         self.values["m"].set(str(instance.m))
         self.values["ct"].set(decimal_text(instance.ct))
+        self.values["max_movs"].set(str(instance.max_movs))
         self.values["total"].set(str(sum(instance.p)))
 
         clear_tree(self.opinion_tree)

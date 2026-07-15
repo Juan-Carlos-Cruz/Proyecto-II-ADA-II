@@ -18,6 +18,7 @@ opinión de destino y una opinión candidata para la mediana.
 - \(ce_j\in\mathbb{R}_{\ge 0}\): costo adicional por persona cuando la
   opinión de destino \(j\) estaba vacía inicialmente.
 - \(ct\in\mathbb{R}_{\ge 0}\): presupuesto máximo.
+- \(maxM\in\mathbb{N}^{+}\): máximo número de movimientos permitidos.
 
 Los datos válidos deben satisfacer:
 
@@ -112,7 +113,17 @@ c_{i,j}\left(1+\frac{p_i}{n}\right)+e_jce_j
 \le ct.
 \]
 
-### 4.4. Selección y linealización de la mediana
+### 4.4. Límite de movimientos
+
+El enunciado cuenta mover una persona de la opinión \(i\) a la opinión
+\(j\) como \(|j-i|\) movimientos. Por tanto:
+
+\[
+\sum_{i\in O}\sum_{\substack{j\in O\\j\ne i}}
+|j-i|x_{i,j}\le maxM.
+\]
+
+### 4.5. Selección y linealización de la mediana
 
 Se selecciona exactamente un valor candidato:
 
@@ -169,7 +180,7 @@ enteros escalados:
 - \(CT=S_cct\).
 
 Los factores \(S_v\) y \(S_c\) son potencias de diez elegidas al convertir
-el archivo `.pca`. Así se preservan exactamente todos los decimales finitos
+el archivo `.mpl`. Así se preservan exactamente todos los decimales finitos
 de la entrada.
 
 Para evitar la división por \(n\), el costo se multiplica por \(nS_c\):
@@ -183,6 +194,9 @@ La restricción equivalente usada por MiniZinc es:
 \[
 \sum_{i,j:i\ne j}U_{i,j}x_{i,j}\le CTn.
 \]
+
+El parámetro \(maxM\) y el conteo \(|j-i|x_{i,j}\) ya son enteros, por lo
+que se usan directamente en MiniZinc.
 
 La polarización escalada es:
 
@@ -199,7 +213,9 @@ Las variables \(x\) describen directamente la salida exigida por MinPol.
 Las restricciones de salida y balance impiden crear personas, perderlas o
 mover más personas de las disponibles inicialmente. La restricción de
 presupuesto reproduce el costo definido en el enunciado, incluido el costo
-extra por destinos inicialmente vacíos. Finalmente, la función objetivo
+extra por destinos inicialmente vacíos. La restricción de movimientos limita
+la distancia total recorrida por las personas movidas, tal como lo define el
+enunciado actualizado. Finalmente, la función objetivo
 calcula la suma de distancias a una mediana ponderada de la distribución
 final. En consecuencia, toda asignación factible de movimientos representa
 una solución válida de MinPol y viceversa. La variable de selección puede

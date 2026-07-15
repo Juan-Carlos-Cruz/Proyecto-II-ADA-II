@@ -1,4 +1,4 @@
-"""Lectura, validación y conversión exacta de instancias MinPol."""
+"""Lectura, validación y conversión exacta de instancias MinPol MPL."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Iterable
 
 
-class PCAValidationError(ValueError):
-    """Indica que un archivo .pca no cumple el formato del enunciado."""
+class MPLValidationError(ValueError):
+    """Indica que un archivo .mpl no cumple el formato del enunciado."""
 
 
 @dataclass(frozen=True)
@@ -19,8 +19,9 @@ class MinPolInstance:
     p: tuple[int, ...]
     v: tuple[Decimal, ...]
     ce: tuple[Decimal, ...]
-    ct: Decimal
     c: tuple[tuple[Decimal, ...], ...]
+    ct: Decimal
+    max_movs: int
     source: Path | None = None
 
 
@@ -42,11 +43,11 @@ def _parse_positive_int(text: str, field: str, line: int) -> int:
     try:
         value = int(text)
     except ValueError as exc:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {line}: {field} debe ser un entero."
         ) from exc
     if value <= 0:
-        raise PCAValidationError(f"Línea {line}: {field} debe ser mayor que 0.")
+        raise MPLValidationError(f"Línea {line}: {field} debe ser mayor que 0.")
     return value
 
 
@@ -68,11 +69,11 @@ def _parse_decimal(text: str, field: str, line: int) -> Decimal:
     try:
         value = Decimal(text)
     except InvalidOperation as exc:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {line}: '{text}' no es un número válido para {field}."
         ) from exc
     if not value.is_finite():
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {line}: {field} debe ser un número decimal finito."
         )
     return value
@@ -96,19 +97,19 @@ def _split_values(text: str, expected: int, field: str, line: int) -> list[str]:
     """
     values = [part.strip() for part in text.split(",")]
     if any(not part for part in values):
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {line}: {field} contiene un valor vacío."
         )
     if len(values) != expected:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {line}: {field} debe contener {expected} valores; "
             f"se encontraron {len(values)}."
         )
     return values
 
 
-def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
-    """Interpreta un PCA completo y valida todos sus campos.
+def parse_mpl_text(text: str, source: Path | None = None) -> MinPolInstance:
+    """Interpreta un MPL completo y valida todos sus campos.
 
     Args:
         text: Contenido textual de la instancia.
@@ -118,9 +119,9 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         Instancia MinPol inmutable con decimales exactos.
 
     Example:
-        >>> instancia = parse_pca_text("1\\n1\\n1\\n0\\n0\\n0\\n0")
-        >>> (instancia.n, instancia.m)
-        (1, 1)
+        >>> instancia = parse_mpl_text("1\\n1\\n1\\n0\\n0\\n0\\n0\\n1")
+        >>> (instancia.n, instancia.m, instancia.max_movs)
+        (1, 1, 1)
     """
 
     numbered_lines = [
@@ -129,19 +130,19 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         if content.strip()
     ]
     if len(numbered_lines) < 2:
-        raise PCAValidationError("El archivo debe contener al menos las líneas n y m.")
+        raise MPLValidationError("El archivo debe contener al menos las líneas n y m.")
 
     n_line, n_text = numbered_lines[0]
     m_line, m_text = numbered_lines[1]
     n = _parse_positive_int(n_text, "n", n_line)
     m = _parse_positive_int(m_text, "m", m_line)
 
-    expected_lines = 6 + m
+    expected_lines = 7 + m
     if len(numbered_lines) != expected_lines:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"La instancia con m={m} debe contener {expected_lines} líneas "
             f"no vacías; se encontraron {len(numbered_lines)}. "
-            "Compruebe que la segunda línea contenga m."
+            "Compruebe el orden: n, m, p, v, ce, matriz c, ct y MaxMovs."
         )
 
     p_line, p_text = numbered_lines[2]
@@ -151,16 +152,16 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         try:
             parsed = int(value)
         except ValueError as exc:
-            raise PCAValidationError(
+            raise MPLValidationError(
                 f"Línea {p_line}: las cantidades de p deben ser enteras."
             ) from exc
         if parsed < 0:
-            raise PCAValidationError(
+            raise MPLValidationError(
                 f"Línea {p_line}: cada valor de p debe ser un entero no negativo."
             )
         p.append(parsed)
     if sum(p) != n:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {p_line}: la suma de p es {sum(p)}, pero n es {n}."
         )
 
@@ -170,7 +171,7 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         for value in _split_values(v_text, m, "v", v_line)
     )
     if any(value < 0 or value > 1 for value in v):
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {v_line}: todos los valores de opinión deben estar entre 0 y 1."
         )
 
@@ -180,29 +181,32 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         for value in _split_values(ce_text, m, "ce", ce_line)
     )
     if any(value < 0 for value in ce):
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"Línea {ce_line}: los costos extra no pueden ser negativos."
-        )
-
-    ct_line, ct_text = numbered_lines[5]
-    ct = _parse_decimal(ct_text, "ct", ct_line)
-    if ct < 0:
-        raise PCAValidationError(
-            f"Línea {ct_line}: el presupuesto ct no puede ser negativo."
         )
 
     matrix: list[tuple[Decimal, ...]] = []
     for row in range(m):
-        line, row_text = numbered_lines[6 + row]
+        line, row_text = numbered_lines[5 + row]
         parsed_row = tuple(
             _parse_decimal(value, f"c[{row + 1},j]", line)
             for value in _split_values(row_text, m, "fila de c", line)
         )
         if any(value < 0 for value in parsed_row):
-            raise PCAValidationError(
+            raise MPLValidationError(
                 f"Línea {line}: los costos de movimiento no pueden ser negativos."
             )
         matrix.append(parsed_row)
+
+    ct_line, ct_text = numbered_lines[5 + m]
+    ct = _parse_decimal(ct_text, "ct", ct_line)
+    if ct < 0:
+        raise MPLValidationError(
+            f"Línea {ct_line}: el presupuesto ct no puede ser negativo."
+        )
+
+    max_movs_line, max_movs_text = numbered_lines[6 + m]
+    max_movs = _parse_positive_int(max_movs_text, "MaxMovs", max_movs_line)
 
     return MinPolInstance(
         n=n,
@@ -210,23 +214,24 @@ def parse_pca_text(text: str, source: Path | None = None) -> MinPolInstance:
         p=tuple(p),
         v=v,
         ce=ce,
-        ct=ct,
         c=tuple(matrix),
+        ct=ct,
+        max_movs=max_movs,
         source=source,
     )
 
 
-def read_pca(path: str | Path) -> MinPolInstance:
-    """Lee y valida una instancia PCA desde el sistema de archivos.
+def read_mpl(path: str | Path) -> MinPolInstance:
+    """Lee y valida una instancia MPL desde el sistema de archivos.
 
     Args:
-        path: Ruta del archivo PCA.
+        path: Ruta del archivo MPL.
 
     Returns:
         Instancia MinPol validada.
 
     Example:
-        >>> instancia = read_pca("DatosProyecto/ejemplos/ejemplo_pdf.pca")
+        >>> instancia = read_mpl("DatosProyecto/ejemplos/ejemplo_pdf.mpl")
         >>> instancia.n
         20
     """
@@ -234,8 +239,8 @@ def read_pca(path: str | Path) -> MinPolInstance:
     try:
         text = source.read_text(encoding="utf-8-sig")
     except OSError as exc:
-        raise PCAValidationError(f"No fue posible leer '{source}': {exc}") from exc
-    return parse_pca_text(text, source=source)
+        raise MPLValidationError(f"No fue posible leer '{source}': {exc}") from exc
+    return parse_mpl_text(text, source=source)
 
 
 def _required_scale(values: Iterable[Decimal]) -> int:
@@ -275,7 +280,7 @@ def _scaled(value: Decimal, scale: int) -> int:
     result = value * scale
     integral = result.to_integral_value()
     if result != integral:
-        raise PCAValidationError(
+        raise MPLValidationError(
             f"No se pudo representar exactamente el valor {value}."
         )
     return int(integral)
@@ -307,7 +312,7 @@ def instance_to_dzn(instance: MinPolInstance) -> str:
         Contenido DZN con costos y opiniones escalados exactamente.
 
     Example:
-        >>> instancia = parse_pca_text("1\\n1\\n1\\n0.5\\n0\\n0\\n0")
+        >>> instancia = parse_mpl_text("1\\n1\\n1\\n0.5\\n0\\n0\\n0\\n1")
         >>> "escala_v = 10;" in instance_to_dzn(instancia)
         True
     """
@@ -337,7 +342,7 @@ def instance_to_dzn(instance: MinPolInstance) -> str:
     return "\n".join(
         [
             f"% Generado automáticamente desde {source}.",
-            "% No editar manualmente: use el conversor PCA.",
+            "% No editar manualmente: use el conversor MPL.",
             "",
             f"n = {instance.n};",
             f"m = {instance.m};",
@@ -349,6 +354,7 @@ def instance_to_dzn(instance: MinPolInstance) -> str:
             f"escala_costo = {cost_scale};",
             f"ce = {_array(scaled_ce)};",
             f"ct = {scaled_ct};",
+            f"maxM = {instance.max_movs};",
             "",
             f"c = array2d(1..{instance.m}, 1..{instance.m}, [",
             *matrix_rows,
@@ -377,20 +383,20 @@ def write_dzn(instance: MinPolInstance, path: str | Path) -> Path:
     return destination
 
 
-def convert_pca_to_dzn(source: str | Path, destination: str | Path) -> Path:
-    """Convierte un archivo PCA a DZN en una sola operación.
+def convert_mpl_to_dzn(source: str | Path, destination: str | Path) -> Path:
+    """Convierte un archivo MPL a DZN en una sola operación.
 
     Args:
-        source: Ruta del PCA de entrada.
+        source: Ruta del MPL de entrada.
         destination: Ruta del DZN de salida.
 
     Returns:
         Ruta absoluta del archivo generado.
 
     Example:
-        >>> # convert_pca_to_dzn("entrada.pca", "DatosProyecto.dzn")
+        >>> # convert_mpl_to_dzn("entrada.mpl", "DatosProyecto.dzn")
     """
-    return write_dzn(read_pca(source), destination)
+    return write_dzn(read_mpl(source), destination)
 
 
 def decimal_text(value: Decimal) -> str:

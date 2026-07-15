@@ -1,5 +1,5 @@
-% Generado automáticamente desde instancia_01_consenso.pca.
-% No editar manualmente: use el conversor PCA.
+% Generado automáticamente desde instancia_01_consenso.mpl.
+% No editar manualmente: use el conversor MPL.
 
 n = 10;
 m = 4;
@@ -11,6 +11,7 @@ v = [0, 33, 66, 100];
 escala_costo = 1;
 ce = [1, 4, 2, 5];
 ct = 12;
+maxM = 6;
 
 c = array2d(1..4, 1..4, [
     0, 2, 5, 8,

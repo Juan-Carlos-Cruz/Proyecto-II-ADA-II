@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from fractions import Fraction
 
-from pca_parser import MinPolInstance
+from mpl_parser import MinPolInstance
 from result_parser import MinPolResult, fraction_text
 
 
@@ -95,6 +95,20 @@ def evaluate_compliance(
     cost_ok = dimensions_ok and expected_cost == result.total_cost
     budget_ok = cost_ok and expected_cost <= budget
 
+    expected_movements = 0
+    if dimensions_ok:
+        expected_movements = sum(
+            abs(j - i) * movements[i][j]
+            for i in range(m)
+            for j in range(m)
+            if i != j
+        )
+    movements_ok = (
+        dimensions_ok
+        and expected_movements == result.total_movements
+        and expected_movements <= instance.max_movs
+    )
+
     expected_polarization = Fraction(0)
     median_optimal = False
     if dimensions_ok and 1 <= result.median_index <= m:
@@ -151,6 +165,11 @@ def evaluate_compliance(
             "Presupuesto",
             f"{fraction_text(expected_cost)} ≤ {fraction_text(budget)}",
             budget_ok,
+        ),
+        ComplianceCheck(
+            "Límite de movimientos",
+            f"{expected_movements} ≤ {instance.max_movs}",
+            movements_ok,
         ),
         ComplianceCheck(
             "Mediana y objetivo",

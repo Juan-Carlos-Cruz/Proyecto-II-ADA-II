@@ -8,7 +8,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 from minizinc_runner import MiniZincRunError, run_minizinc
-from pca_parser import MinPolInstance, PCAValidationError, read_pca, write_dzn
+from mpl_parser import MinPolInstance, MPLValidationError, read_mpl, write_dzn
 from result_parser import MinPolResult, ResultParseError, fraction_text, parse_minizinc_output
 
 from .input_view import InputView
@@ -121,7 +121,7 @@ class MinPolApp(tk.Tk):
         self.status.set(message)
 
     def load_file(self) -> None:
-        """Solicita un PCA, lo valida y actualiza las vistas.
+        """Solicita un MPL, lo valida y actualiza las vistas.
 
         Returns:
             None.
@@ -131,13 +131,13 @@ class MinPolApp(tk.Tk):
         """
         selected = filedialog.askopenfilename(
             title="Seleccionar instancia MinPol",
-            filetypes=(("Instancias PCA", "*.pca"), ("Todos los archivos", "*.*")),
+            filetypes=(("Instancias MPL", "*.mpl"), ("Todos los archivos", "*.*")),
         )
         if not selected:
             return
         try:
-            instance = read_pca(selected)
-        except PCAValidationError as exc:
+            instance = read_mpl(selected)
+        except MPLValidationError as exc:
             messagebox.showerror("Archivo inválido", str(exc), parent=self)
             self.set_status("La instancia seleccionada no es válida.")
             return
@@ -162,8 +162,8 @@ class MinPolApp(tk.Tk):
             >>> # instancia = app._reload_and_generate()
         """
         if not self.source_path:
-            raise PCAValidationError("Primero debe cargar un archivo .pca.")
-        instance = read_pca(self.source_path)
+            raise MPLValidationError("Primero debe cargar un archivo .mpl.")
+        instance = read_mpl(self.source_path)
         write_dzn(instance, GENERATED_DZN)
         self.instance = instance
         return instance
@@ -179,7 +179,7 @@ class MinPolApp(tk.Tk):
         """
         try:
             self._reload_and_generate()
-        except PCAValidationError as exc:
+        except MPLValidationError as exc:
             messagebox.showerror("No se pudo generar el DZN", str(exc), parent=self)
             return
         self.set_status(f"Datos generados en {GENERATED_DZN.name}.")
@@ -200,7 +200,7 @@ class MinPolApp(tk.Tk):
         """
         try:
             instance = self._reload_and_generate()
-        except PCAValidationError as exc:
+        except MPLValidationError as exc:
             messagebox.showerror("Datos inválidos", str(exc), parent=self)
             return
 
