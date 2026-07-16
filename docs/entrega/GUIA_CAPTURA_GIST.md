@@ -30,8 +30,10 @@ En la ventana de Gecode Gist:
 
 Como referencia del backend Gecode sin visualizador, la ejecución actual del
 modelo reportó 50 nodos, 11 fallos, 13 soluciones y profundidad máxima 18.
-La captura debe mostrar el árbol generado por Gist y, si la interfaz lo
-permite, el resumen de nodos/fallos.
+La captura final de Gist muestra profundidad visual 19, 13 nodos solución,
+17 fallidos, 29 de ramificación y cero abiertos. La diferencia corresponde a
+que el visualizador cuenta las categorías dibujadas y el backend reporta
+eventos internos de búsqueda.
 
 ## 3. Guardar la evidencia
 

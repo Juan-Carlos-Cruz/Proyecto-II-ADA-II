@@ -1,10 +1,11 @@
 # Análisis de resultados
 
-Todas las ejecuciones fueron realizadas con MiniZinc 2.9.7 y HiGHS 1.14.0.
-Los tiempos son mediciones puntuales del solver; no incluyen la conversión
-del archivo ni el tiempo de inicio de la interfaz. En todos los casos el
-solver reportó el mismo valor para la solución y su cota, por lo que el
-estado es óptimo.
+La tabla principal fue generada con MiniZinc 2.9.7 y HiGHS 1.14.0. La batería
+de 30 entradas suministradas se ejecutó con COIN-BC 2.10.13, porque reproduce
+el óptimo de referencia 10.313 de MinPol15. Los tiempos son mediciones
+puntuales del solver; no incluyen la conversión del archivo ni el tiempo de
+inicio de la interfaz. En todos los casos el solver cerró la búsqueda con
+estado óptimo.
 
 | Instancia | n | m | ct | maxM | Movs | Costo | Polarización | Tiempo (s) | Nodos | Estado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
@@ -15,12 +16,17 @@ estado es óptimo.
 | Instancia 4 | 18 | 6 | 18.75 | 15 | 14 | 18.6667 | 2.75 | 0.2588 | 76 | Óptimo |
 | Instancia 5 | 40 | 8 | 45 | 25 | 24 | 44.85 | 11.7 | 0.3547 | 15 | Óptimo |
 
-Además se procesaron las 30 entradas de `bateria_pruebas/mpl`. Las 28
-entradas válidas se convirtieron a DZN, alcanzaron estado óptimo y pasaron la
-comprobación independiente. `MinPol28.mpl` y `MinPol29.mpl` fueron rechazadas
-antes del solver porque declaran `n=100`, pero su distribución inicial suma
-125. El detalle reproducible está en
+Además se procesaron las 30 entradas de `bateria_pruebas/mpl` con COIN-BC.
+Todas se convirtieron a DZN, alcanzaron estado óptimo y pasaron la
+comprobación independiente. `MinPol28.mpl` y `MinPol29.mpl` usan `n=125`,
+consistente con su distribución inicial y con los valores de referencia del
+profesor. El detalle reproducible está en
 `Pruebas/resultados_bateria_suministrada.csv`.
+
+De los 30 valores, 23 coinciden textualmente con la tabla del profesor y los
+siete restantes difieren únicamente en 0.001. El modelo usa enteros escalados
+y obtiene 9.687, 6.550, 14.172, 17.898, 23.567, 24.176 y 30.000; los valores
+publicados son compatibles con truncamiento de representaciones flotantes.
 
 ## Efecto de aumentar m
 

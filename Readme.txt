@@ -172,10 +172,15 @@ Validación y resolución de las 30 entradas suministradas:
 
     python3 Pruebas/verificar_bateria_suministrada.py
 
-Este último comando resuelve las 28 entradas válidas y registra en
-Pruebas/resultados_bateria_suministrada.csv el rechazo de MinPol28.mpl y
-MinPol29.mpl: ambas declaran n=100, pero su distribución inicial suma 125.
-Los archivos originales no se modifican.
+Este último comando resuelve las 30 entradas válidas con COIN-BC por defecto
+y registra los óptimos y las comprobaciones independientes en
+Pruebas/resultados_bateria_suministrada.csv. MinPol28.mpl y MinPol29.mpl
+declaran n=125, consistente con su distribución inicial y con los valores de
+referencia suministrados por el profesor.
+De los 30 objetivos, 23 coinciden textualmente y siete difieren sólo en 0.001
+por el tratamiento exacto de decimales frente al truncamiento de la tabla de
+referencia. El CSV incluye el valor del profesor y la diferencia calculada, y
+el verificador falla automáticamente si una diferencia supera 0.001.
 
 Regenerar gráficos (requiere Pillow):
 
