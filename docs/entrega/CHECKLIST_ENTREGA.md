@@ -3,7 +3,7 @@
 ## Informe y rúbrica
 
 - [x] Reemplazar nombres y códigos de los integrantes.
-- [ ] Reemplazar la captura de Gecode Gist por una generada con el modelo
+- [x] Reemplazar la captura de Gecode Gist por una generada con el modelo
   actualizado `.mpl` + `maxM`.
 - [x] Verificar que modelo matemático y `Proyecto.mzn` coincidan.
 - [x] Actualizar la tabla si se repiten las pruebas.
@@ -29,8 +29,8 @@
 - [x] Ejecutar las ocho pruebas unitarias.
 - [x] Ejecutar la batería de diez instancias.
 - [x] Ejecutar la verificación independiente.
-- [x] Procesar las 30 entradas suministradas: 28 óptimas y dos rechazadas
-  por inconsistencia entre `n` y la suma de `p`.
+- [x] Procesar las 30 entradas suministradas: 30 óptimas y con comprobaciones
+  independientes aprobadas.
 - [ ] Probar la interfaz desde una copia limpia.
 - [ ] Probar otro sistema operativo o declarar cuál se probó realmente.
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import os
 import sys
+from fractions import Fraction
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -16,14 +17,24 @@ sys.path.insert(0, str(GUI_SOURCES))
 
 from compliance import evaluate_compliance
 from minizinc_runner import run_minizinc
-from mpl_parser import MPLValidationError, decimal_text, read_mpl, write_dzn
+from mpl_parser import decimal_text, read_mpl, write_dzn
 from result_parser import fraction_text, parse_minizinc_output
 
 
-EXPECTED_INVALID = {
-    "MinPol28.mpl": "la suma de p es 125, pero n es 100",
-    "MinPol29.mpl": "la suma de p es 125, pero n es 100",
-}
+REFERENCE_VALUES = dict(
+    zip(
+        (f"MinPol{number}.mpl" for number in range(1, 31)),
+        (
+            "0.09", "0", "0", "0", "0.482", "0.003", "3.085", "4.323",
+            "5.373", "9.686", "10.349", "3.721", "12.417", "6.549",
+            "10.313", "18.786", "14.171", "17.897", "19.603", "23.566",
+            "24.175", "31.135", "3.822", "29.902", "24.775", "30.748",
+            "25.021", "14.683", "29.999", "0",
+        ),
+        strict=True,
+    )
+)
+REFERENCE_TOLERANCE = Fraction(1, 1000)
 
 
 def _instance_number(path: Path) -> int:
@@ -46,10 +57,12 @@ def main() -> int:
             f"Batería incompleta. Faltan: {missing}; inesperadas: {unexpected}."
         )
 
-    solver = os.environ.get("MINPOL_SOLVER", "HiGHS")
+    # COIN-BC reproduce el óptimo de referencia de MinPol15. HiGHS 1.14.0
+    # reportó 10.342 en esa instancia, mientras COIN-BC, Gecode y Chuffed
+    # certificaron el valor de referencia 10.313.
+    solver = os.environ.get("MINPOL_SOLVER", "COIN-BC")
     rows: list[dict[str, str]] = []
     optimal_count = 0
-    invalid_count = 0
 
     with TemporaryDirectory(prefix="minpol_bateria_") as temporary_directory:
         temporary_root = Path(temporary_directory)
@@ -63,27 +76,15 @@ def main() -> int:
                 "costo_usado": "",
                 "movimientos": "",
                 "polarizacion": "",
+                "valor_profesor": REFERENCE_VALUES[path.name],
+                "diferencia_profesor": "",
                 "tiempo_solver_s": "",
                 "nodos": "",
                 "solver": solver,
                 "estado": "",
                 "detalle": "",
             }
-            try:
-                instance = read_mpl(path)
-            except MPLValidationError as exc:
-                expected_message = EXPECTED_INVALID.get(path.name)
-                if expected_message is None or expected_message not in str(exc):
-                    raise
-                base_row["estado"] = "ENTRADA INVÁLIDA ESPERADA"
-                base_row["detalle"] = str(exc)
-                rows.append(base_row)
-                invalid_count += 1
-                continue
-            if path.name in EXPECTED_INVALID:
-                raise RuntimeError(
-                    f"{path.name} dejó de presentar la inconsistencia esperada."
-                )
+            instance = read_mpl(path)
 
             generated_dzn = write_dzn(
                 instance,
@@ -102,6 +103,14 @@ def main() -> int:
                     f"{path.name} incumple: {', '.join(failed_checks)}."
                 )
 
+            reference = Fraction(REFERENCE_VALUES[path.name])
+            reference_difference = abs(result.polarization - reference)
+            if reference_difference > REFERENCE_TOLERANCE:
+                raise RuntimeError(
+                    f"{path.name} obtuvo {fraction_text(result.polarization)}, "
+                    f"pero la referencia es {REFERENCE_VALUES[path.name]}."
+                )
+
             optimal = any(
                 line.strip() == "==========" for line in output.splitlines()
             )
@@ -114,10 +123,14 @@ def main() -> int:
                     "costo_usado": fraction_text(result.total_cost),
                     "movimientos": str(result.total_movements),
                     "polarizacion": fraction_text(result.polarization),
+                    "diferencia_profesor": fraction_text(reference_difference),
                     "tiempo_solver_s": result.statistics.get("solveTime", ""),
                     "nodos": result.statistics.get("nodes", ""),
                     "estado": "ÓPTIMO" if optimal else "FACTIBLE",
-                    "detalle": "Todas las comprobaciones independientes pasaron.",
+                    "detalle": (
+                        "Comprobaciones independientes aprobadas y diferencia "
+                        "con el profesor no mayor que 0.001."
+                    ),
                 }
             )
             rows.append(base_row)
@@ -130,8 +143,7 @@ def main() -> int:
         writer.writerows(rows)
 
     print(
-        f"Batería suministrada: {optimal_count} óptimas, "
-        f"{invalid_count} entradas inválidas, {len(rows)} archivos."
+        f"Batería suministrada: {optimal_count} óptimas de {len(rows)} archivos."
     )
     print(f"Tabla: {destination}")
     return 0

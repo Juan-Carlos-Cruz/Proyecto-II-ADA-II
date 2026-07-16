@@ -1,6 +1,6 @@
 # Auditoría frente al enunciado y la rúbrica
 
-Fecha de revisión: 13 de julio de 2026.
+Fecha de revisión: 16 de julio de 2026.
 
 Esta auditoría separa funcionalidad y evidencia de entrega. Una función
 correcta no obtiene el máximo si la rúbrica exige además una captura, video o
@@ -10,7 +10,7 @@ sustentación.
 
 | Criterio | Máximo | Estado defendible | Para llegar al máximo |
 |---|---:|---:|---|
-| 1. Branch and Bound | 8 | 5 | Falta una captura real del árbol actual en Gecode Gist. |
+| 1. Branch and Bound | 8 | 8 | Árbol real de Gecode Gist incorporado y analizado. |
 | 2. Formulación | 24 | 24 | Incluye parámetros, variables, restricciones, objetivo y uso de enteros. |
 | 3. Modelo y pruebas | 48 | 48 | Conservar salidas, versiones y argumentos de eficiencia/optimalidad. |
 | 4. Sustentación | 10 | No evaluable todavía | Todos deben poder defender modelo, B&B, pruebas e interfaz. |
@@ -32,12 +32,13 @@ Evidencia existente:
 
 Evidencia del visualizador:
 
-- La ejecución reproducible con Gecode 6.3.0 reporta 50 nodos, 11 fallos,
-  13 soluciones y profundidad máxima 18.
-- La captura PNG disponible sólo muestra la raíz y no constituye evidencia
-  del árbol. Por eso fue retirada del informe.
-- Falta ejecutar Gecode Gist con el modelo y el DZN actuales, desplegar el
-  árbol y guardar una captura que muestre el solver y sus estadísticas.
+- La ejecución reproducible con Gecode 6.3.0 en modo estadístico reporta 50
+  nodos, 11 fallos, 13 soluciones y profundidad máxima 18.
+- La captura real de Gecode Gist usa el modelo y DZN actuales con `maxM` y
+  muestra el árbol completamente explorado: profundidad visual 19, 13 nodos
+  solución, 17 fallidos, 29 de ramificación y cero abiertos.
+- El informe explica por qué el conteo visual de Gist y las estadísticas
+  internas del motor no son directamente equivalentes.
 
 ## 2. Formulación matemática
 
@@ -64,9 +65,10 @@ ponderada. Esta justificación debe conservarse en el informe.
   \(\sum |j-i|x_{i,j}\le maxM\).
 - [x] Hay cinco instancias propias con entrada, DZN y óptimo.
 - [x] La batería principal cubre diez configuraciones.
-- [x] Se procesaron las 30 entradas suministradas: 28 válidas se resolvieron
-  con optimalidad y pasaron las comprobaciones independientes; MinPol28 y
-  MinPol29 se rechazaron porque declaran \(n=100\) y \(\sum p_i=125\).
+- [x] Se procesaron las 30 entradas suministradas con COIN-BC: todas se
+  resolvieron con optimalidad y pasaron las comprobaciones independientes.
+  MinPol28 y MinPol29 usan \(n=125\), consistente con \(\sum p_i=125\) y con
+  los valores de referencia suministrados.
 - [x] Una verificación independiente recalcula restricciones, movimientos y
   objetivo.
 - [x] El informe analiza bondades, falencias, eficiencia y optimalidad.
@@ -122,6 +124,6 @@ el riesgo operativo.
 - [x] Informe con modelo, implementación, B&B, pruebas, análisis y conclusiones.
 - [x] Tres salidas factibles y óptimo del ejemplo.
 - [x] Nombres, códigos, profesor y monitor en el informe.
-- [ ] Árbol real exportado desde Gecode Gist con el modelo y DZN actuales.
+- [x] Árbol real exportado desde Gecode Gist con el modelo y DZN actuales.
 - [ ] Video y enlace en el PDF.
 - [ ] ZIP final con copia raíz de `Informe.pdf`.

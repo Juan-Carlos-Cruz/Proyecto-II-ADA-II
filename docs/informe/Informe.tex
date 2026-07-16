@@ -440,15 +440,29 @@ cifras se reproducen desde la raíz del proyecto con
 \texttt{minizinc -{}-solver Gecode -{}-statistics Proyecto.mzn}
 \texttt{DatosProyecto/ejemplos/ejemplo\_pdf.dzn}.
 
-\pendiente{incorporar una captura de Gecode Gist obtenida con este mismo
-modelo y archivo DZN. La evidencia visual debe mostrar el árbol desplegado,
-el solver y su resumen; no debe usarse una captura de una versión anterior
-sin \(maxM\).}
+La figura~\ref{fig:arbol-gist} muestra la ejecución interactiva del mismo
+modelo y DZN en Gecode Gist. Después de explorar todas las soluciones, el
+visualizador registró profundidad 19 (contando la raíz), 13 nodos solución,
+17 nodos fallidos, 29 nodos de ramificación y cero nodos abiertos. El conteo
+visual no coincide directamente con las estadísticas del motor porque Gist
+clasifica y contabiliza los nodos dibujados, mientras el modo estadístico
+reporta eventos internos de búsqueda.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{arbol_minizinc_instancia_mayor.png}
+\caption{Árbol completamente explorado en Gecode Gist para el ejemplo del
+enunciado con la restricción \(maxM\). La barra inferior confirma cero nodos
+abiertos.}
+\label{fig:arbol-gist}
+\end{figure}
 
 \section{Pruebas realizadas}
 
-Las pruebas se ejecutaron con MiniZinc 2.9.7 y HiGHS 1.14.0. Los tiempos
-corresponden al solver y son mediciones puntuales.
+La tabla principal se ejecutó con MiniZinc 2.9.7 y HiGHS 1.14.0. La batería
+de 30 entradas suministradas se resolvió con COIN-BC 2.10.13, que reproduce
+el óptimo de referencia 10.313 de \texttt{MinPol15}. Los tiempos corresponden
+al solver y son mediciones puntuales.
 
 \begin{center}
 \scriptsize
@@ -488,19 +502,23 @@ También se procesaron las 30 entradas de
 \toprule
 Entradas & Cantidad & Resultado\\
 \midrule
-\texttt{MinPol1--27} y \texttt{MinPol30} & 28 &
-Óptimo y verificaciones aprobadas\\
-\texttt{MinPol28} & 1 & Entrada inválida: \(n=100\), \(\sum p_i=125\)\\
-\texttt{MinPol29} & 1 & Entrada inválida: \(n=100\), \(\sum p_i=125\)\\
+\texttt{MinPol1--30} & 30 & Óptimo y verificaciones aprobadas\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Las 28 entradas válidas fueron convertidas a DZN antes de ejecutar el modelo.
-Las dos entradas inconsistentes se rechazaron antes del solver y sus archivos
-originales no se modificaron. La tabla completa se encuentra en
+Las 30 entradas fueron convertidas a DZN antes de ejecutar el modelo con
+COIN-BC. En \texttt{MinPol28} y \texttt{MinPol29}, \(n=125\) coincide con
+\(\sum p_i=125\) y permite reproducir los valores de referencia suministrados.
+La tabla completa se encuentra en
 \texttt{Pruebas/resultados\_bateria\_suministrada.csv} y se regenera con
 \texttt{python3 Pruebas/verificar\_bateria\_suministrada.py}.
+
+Veintitrés valores coinciden textualmente con la tabla de referencia. Los
+siete restantes difieren únicamente en 0.001: el modelo entero escalado
+obtiene 9.687, 6.550, 14.172, 17.898, 23.567, 24.176 y 30.000. Esta diferencia
+es compatible con truncamiento de representaciones de punto flotante en los
+valores publicados.
 
 \section{Análisis de resultados}
 
@@ -571,10 +589,9 @@ mismo valor o costo.
 
 \textbf{Eficiencia.} En las seis instancias resumidas en la tabla, HiGHS
 tardó entre aproximadamente 0.01 y 0.36 segundos y exploró entre 1 y 76
-nodos. En las 28
-entradas válidas de la batería suministrada, con \(3\le m\le20\) y
-\(5\le n\le200\), los tiempos puntuales estuvieron entre menos de 0.01 y
-aproximadamente 5.2 segundos, y el solver exploró entre 1 y 192 nodos. No se
+nodos. En las 30 entradas de la batería suministrada, COIN-BC empleó entre
+0.0031 y 5.0107 segundos y exploró entre 0 y 184 nodos, con
+\(3\le m\le20\) y \(5\le n\le200\). No se
 observa crecimiento
 monótono con \(m\): la estructura de costos, la simetría y la holgura del
 presupuesto influyen además del tamaño cuadrático del modelo. Las
@@ -607,7 +624,7 @@ soluciones informadas.
     \item El número de opiniones incrementa el tamaño cuadráticamente, pero
     la dificultad efectiva depende también de la estructura de costos y de
     la simetría.
-    \item Las diez pruebas de integración, las ocho pruebas unitarias y las 28
+    \item Las diez pruebas de integración, las ocho pruebas unitarias y las 30
     entradas válidas de la batería suministrada respaldan la corrección del
     modelo, el conversor y la comprobación independiente de restricciones.
 \end{enumerate}
