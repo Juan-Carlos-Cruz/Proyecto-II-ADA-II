@@ -1,45 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 0 1100 650">
   <defs>
     <style>
-      .title { font: 700 24px sans-serif; fill: #172033; }
+      .title { font: 700 25px sans-serif; fill: #172033; }
       .label { font: 700 18px sans-serif; fill: #172033; }
       .text { font: 16px sans-serif; fill: #334155; }
       .small { font: 14px sans-serif; fill: #475569; }
-      .node { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; rx: 12; }
-      .success { fill: #ecfdf5; stroke: #059669; stroke-width: 3; rx: 12; }
-      .arrow { fill: none; stroke: #64748b; stroke-width: 3; marker-end: url(#head); }
+      .branch { font: 700 16px sans-serif; fill: #334155; }
+      .root { fill: #eff6ff; stroke: #2563eb; stroke-width: 3; }
+      .integer { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+      .pruned { fill: #fff7ed; stroke: #ea580c; stroke-width: 3; }
+      .certificate { fill: #f8fafc; stroke: #475569; stroke-width: 2; }
+      .edge { fill: none; stroke: #64748b; stroke-width: 3; marker-end: url(#head); }
+      .cert-edge { fill: none; stroke: #059669; stroke-width: 2.5; marker-end: url(#green-head); }
     </style>
     <marker id="head" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
       <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
     </marker>
+    <marker id="green-head" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#059669"/>
+    </marker>
   </defs>
-  <text x="550" y="38" text-anchor="middle" class="title">Traza de acotamiento en el nodo raíz — instancia pequeña</text>
-  <rect x="40" y="90" width="225" height="125" class="node"/>
-  <text x="152" y="121" text-anchor="middle" class="label">Nodo raíz</text>
-  <text x="152" y="151" text-anchor="middle" class="text">Cota inferior: 0</text>
-  <text x="152" y="178" text-anchor="middle" class="text">Sin incumbente</text>
-  <text x="152" y="201" text-anchor="middle" class="small">Relajación y presolve</text>
-  <rect x="315" y="90" width="225" height="125" class="node"/>
-  <text x="427" y="121" text-anchor="middle" class="label">Solución factible</text>
-  <text x="427" y="151" text-anchor="middle" class="text">Incumbente: 20</text>
-  <text x="427" y="178" text-anchor="middle" class="text">Cota inferior: 0</text>
-  <text x="427" y="201" text-anchor="middle" class="small">Polarización real: 2</text>
-  <rect x="590" y="90" width="225" height="125" class="node"/>
-  <text x="702" y="121" text-anchor="middle" class="label">Cortes y mejora</text>
-  <text x="702" y="151" text-anchor="middle" class="text">Incumbente: 10</text>
-  <text x="702" y="178" text-anchor="middle" class="text">Cota inferior: 5</text>
-  <text x="702" y="201" text-anchor="middle" class="small">Polarización real: 1</text>
-  <rect x="865" y="90" width="195" height="125" class="success"/>
-  <text x="962" y="121" text-anchor="middle" class="label">Óptimo</text>
-  <text x="962" y="151" text-anchor="middle" class="text">LB = UB = 10</text>
-  <text x="962" y="178" text-anchor="middle" class="text">Brecha: 0 %</text>
-  <text x="962" y="201" text-anchor="middle" class="small">1 nodo explorado</text>
-  <path d="M265,152 L310,152" class="arrow"/>
-  <path d="M540,152 L585,152" class="arrow"/>
-  <path d="M815,152 L860,152" class="arrow"/>
-  <rect x="172" y="300" width="756" height="150" class="node"/>
-  <text x="550" y="333" text-anchor="middle" class="label">Solución óptima certificada</text>
-  <text x="550" y="366" text-anchor="middle" class="text">Movimientos: 1→2 y 3→2 (una persona en cada movimiento)</text>
-  <text x="550" y="397" text-anchor="middle" class="text">Distribución final: [1, 2, 1] · mediana: 0.5 · costo: 3</text>
-  <text x="550" y="428" text-anchor="middle" class="small">El presolve y los cortes cerraron la brecha en la raíz; no fue necesario ramificar.</text>
+
+  <text x="550" y="35" text-anchor="middle" class="title">Branch and Bound clásico — instancia MinPol pequeña</text>
+
+  <rect x="350" y="65" width="400" height="165" rx="12" class="root"/>
+  <text x="550" y="98" text-anchor="middle" class="label">Nodo raíz · relajación lineal</text>
+  <text x="550" y="130" text-anchor="middle" class="text">(a,b) = (2, 1/6)</text>
+  <text x="550" y="160" text-anchor="middle" class="text">LB = P = 11/12</text>
+  <text x="550" y="190" text-anchor="middle" class="text">b es fraccionaria</text>
+  <text x="550" y="215" text-anchor="middle" class="small">Ramificar con piso y techo de 1/6</text>
+
+  <path d="M515,230 C460,285 355,292 285,350" class="edge"/>
+  <path d="M585,230 C640,285 745,292 815,350" class="edge"/>
+  <rect x="285" y="272" width="120" height="36" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="345" y="296" text-anchor="middle" class="branch">b ≤ 0</text>
+  <rect x="695" y="272" width="120" height="36" rx="7" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="755" y="296" text-anchor="middle" class="branch">b ≥ 1</text>
+
+  <rect x="55" y="350" width="430" height="175" rx="12" class="integer"/>
+  <text x="270" y="383" text-anchor="middle" class="label">Nodo izquierdo · solución entera</text>
+  <text x="270" y="417" text-anchor="middle" class="text">(a,b) = (2,0) · P = 1</text>
+  <text x="270" y="449" text-anchor="middle" class="text">Nuevo incumbente: UB = 1</text>
+  <text x="270" y="481" text-anchor="middle" class="text">Cerrar por integralidad</text>
+  <text x="270" y="507" text-anchor="middle" class="small">Distribución final [0,2,2]</text>
+
+  <rect x="615" y="350" width="430" height="175" rx="12" class="pruned"/>
+  <text x="830" y="383" text-anchor="middle" class="label">Nodo derecho · relajación</text>
+  <text x="830" y="417" text-anchor="middle" class="text">(a,b) = (1/3,1) · LB = 4/3</text>
+  <text x="830" y="449" text-anchor="middle" class="text">LB = 4/3 ≥ UB = 1</text>
+  <text x="830" y="481" text-anchor="middle" class="text">Podar por cota</text>
+  <text x="830" y="507" text-anchor="middle" class="small">Ningún descendiente puede mejorar al incumbente</text>
+
+  <path d="M270,525 C300,556 405,563 440,578" class="cert-edge"/>
+  <rect x="300" y="570" width="500" height="60" rx="10" class="certificate"/>
+  <text x="550" y="596" text-anchor="middle" class="label">Certificado de optimalidad</text>
+  <text x="550" y="619" text-anchor="middle" class="small">No quedan nodos abiertos; el óptimo entero es P* = 1.</text>
 </svg>
