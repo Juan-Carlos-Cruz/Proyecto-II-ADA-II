@@ -27,7 +27,9 @@ Evidencia existente:
 - El informe explica incumbente, cota inferior, ramificación y causas de poda.
 - Hay una instancia pequeña reproducible en
   `DatosProyecto/branch_and_bound/`.
-- Se desarrollan costo, solución, cotas y cierre de brecha.
+- Se desarrolla su relajación fraccionaria y se ramifica con piso y techo.
+- El árbol muestra el incumbente, una rama integral, una poda por cota y el
+  certificado de optimalidad.
 - Se reporta una ejecución mayor con Chuffed y sus métricas.
 
 Evidencia del visualizador:

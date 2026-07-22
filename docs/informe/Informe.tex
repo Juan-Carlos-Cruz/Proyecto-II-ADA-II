@@ -369,40 +369,75 @@ la mejor solución.
 Se construyó la instancia reproducible
 \texttt{DatosProyecto/branch\_and\_bound/ejemplo\_pequeno.mpl}, con
 \(n=4\), \(m=3\), \(p=(2,0,2)\), \(v=(0,0.5,1)\), \(ce=(0,0,0)\),
-\(ct=3\), \(maxM=2\) y
+\(ct=3.5\), \(maxM=4\) y
 
 \[
 C=\begin{pmatrix}
-0&1&3\\
-1&0&1\\
-3&1&0
+0&1&10\\
+10&0&10\\
+10&2&0
 \end{pmatrix}.
 \]
 
-Sin movimientos, la polarización es 2. Una solución óptima mueve una persona
-de la opinión 1 a la 2 y una de la 3 a la 2. Su costo es
-\(1(1+2/4)+1(1+2/4)=3\), la distribución final es \([1,2,1]\), la mediana
-es 0.5, usa 2 movimientos de 2 permitidos y la polarización es 1.
+Los únicos arcos no diagonales cuyo costo cabe en el presupuesto son
+\(1\to2\) y \(3\to2\). Sean \(a=x_{1,2}\) y \(b=x_{3,2}\). El costo efectivo
+de cada traslado por el primer arco es
+\(1(1+2/4)=3/2\), mientras que por el segundo es
+\(2(1+2/4)=3\). La distribución resultante es
+\([2-a,a+b,2-b]\). La opinión central, de valor 0.5, siempre es una mediana
+óptima para estas soluciones, por lo que la instancia se reduce a:
 
-La traza detallada de HiGHS comienza con cota inferior 0. Una heurística
-encuentra un incumbente de objetivo escalado 20; luego los cortes mejoran el
-incumbente a 10 y la cota a 5. Finalmente la cota alcanza 10, queda
-\(LB=UB=10\) y la brecha es 0\,\%. Como la escala de opiniones es 10, esos
-objetivos corresponden a polarizaciones 2 y 1. El preprocesamiento y los
-cortes cerraron la brecha en el nodo raíz; en esta ejecución no fue
-necesario crear ramas adicionales.
+\[
+\begin{aligned}
+\min\quad & P=2-\tfrac{1}{2}(a+b)\\
+\text{sujeto a}\quad
+& \tfrac{3}{2}a+3b\le \tfrac{7}{2},\\
+&0\le a\le2,\quad 0\le b\le2,\\
+&a,b\in\mathbb{Z}.
+\end{aligned}
+\]
+
+En el nodo raíz se omite temporalmente la integralidad. La relajación lineal
+usa primero el traslado más barato y obtiene
+\((a,b)=(2,1/6)\), con cota inferior
+\(LB=2-\tfrac12(2+1/6)=11/12\). Como \(b\) es fraccionaria, Branch and Bound
+crea los dos subproblemas \(b\le\lfloor1/6\rfloor=0\) y
+\(b\ge\lceil1/6\rceil=1\).
+
+En la rama \(b\le0\), la relajación produce \((a,b)=(2,0)\), una solución
+entera con polarización 1. Esta solución se convierte en el incumbente y
+establece \(UB=1\). En la rama \(b\ge1\), la mejor solución relajada es
+\((a,b)=(1/3,1)\), con \(LB=4/3\). Como es un problema de minimización y
+\(4/3\ge1\), toda solución entera descendiente de esa rama es incapaz de
+mejorar el incumbente; por tanto, se poda por cota.
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Nodo & Restricción añadida & Óptimo de la relajación & Decisión\\
+\midrule
+Raíz & ninguna & \((2,1/6),\ LB=11/12\) & ramificar en \(b\)\\
+Izquierdo & \(b\le0\) & \((2,0),\ P=1\) & entero; fijar \(UB=1\)\\
+Derecho & \(b\ge1\) & \((1/3,1),\ LB=4/3\) & podar: \(LB\ge UB\)\\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{arbol_bb_pequeno.pdf}
-\caption{Evolución de cotas e incumbentes en la instancia pequeña.}
+\caption{Árbol de Branch and Bound de la instancia pequeña: ramificación
+sobre una variable fraccionaria y poda por cota.}
 \end{figure}
 
-En general, Branch and Bound contempla tres situaciones de cierre: una
-relajación infactible elimina el nodo; una cota \(LB\ge UB\) elimina un nodo
-incapaz de mejorar el incumbente; y una solución entera puede actualizar el
-incumbente. En esta ejecución concreta no se generaron ramas: la heurística,
-el preprocesamiento y los cortes cerraron la brecha en la raíz.
+Al cerrar las dos ramas no quedan nodos abiertos y se certifica que
+\((a,b)=(2,0)\) es óptima. En términos de \MinPol{}, se trasladan dos personas
+de la opinión 1 a la 2, con costo 3, dos movimientos, distribución final
+\([0,2,2]\), mediana seleccionada 0.5 y polarización 1. MiniZinc y HiGHS
+confirman ese óptimo con objetivo escalado 10. El solver industrial puede
+cerrar la instancia en el nodo raíz mediante preprocesamiento y cortes; el
+árbol anterior expone deliberadamente el procedimiento clásico sobre la
+relajación lineal para hacer visibles la ramificación y la poda.
 
 \subsection{Ejemplo de mayor búsqueda}
 

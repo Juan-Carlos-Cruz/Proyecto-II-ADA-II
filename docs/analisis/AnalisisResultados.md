@@ -67,13 +67,22 @@ presupuesto.
 
 ## Branch and Bound
 
+La instancia pequeña de `DatosProyecto/branch_and_bound/` permite mostrar
+la ramificación clásica sin depender de las heurísticas internas del solver.
+Al reducirla a los movimientos \(a=x_{1,2}\) y \(b=x_{3,2}\), la relajación
+raíz obtiene \((a,b)=(2,1/6)\) y \(LB=11/12\). Se ramifica en
+\(b\le 0\) y \(b\ge 1\): la primera rama da el incumbente entero
+\((2,0)\), con \(UB=1\), y la segunda tiene \(LB=4/3\), por lo que se poda
+al no poder mejorar dicho incumbente. Al quedar el árbol cerrado se certifica
+la polarización óptima 1.
+
 En HiGHS, la instancia 4 produjo el mayor árbol de esta batería: 76 nodos.
 La relajación lineal proporciona cotas inferiores; cada solución entera
 factible establece una cota superior. Un nodo se poda si es infactible, si
 su cota no mejora al incumbente o cuando ya es integral. El proceso termina
 cuando la mejor cota coincide con el valor del incumbente.
 
-Para el ejemplo, HiGHS resolvió el modelo en el nodo raíz después del
+Para el ejemplo del enunciado, HiGHS resolvió el modelo en el nodo raíz después del
 preprocesamiento. Chuffed mostró con más detalle la búsqueda discreta:
 225 nodos, 114 fallos, 18 reinicios, profundidad máxima 9 y 17 198
 propagaciones. Chuffed encontró polarización escalada 50 y luego demostró que
