@@ -12,7 +12,6 @@ venv/
 env/
 
 # MiniZinc y resultados generados
-/DatosProyecto.dzn
 *.fzn
 *.ozn
 *.sol
