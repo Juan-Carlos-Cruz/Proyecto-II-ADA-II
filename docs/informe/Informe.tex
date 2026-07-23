@@ -8,6 +8,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,longtable,tabularx,array}
 \usepackage{graphicx,float}
+\usepackage{pdflscape}
 \graphicspath{{assets/}{docs/informe/assets/}}
 \usepackage{xcolor}
 \usepackage{enumitem}
@@ -87,6 +88,11 @@ aplicación valida archivos de entrada, conserva exactamente los datos
 decimales, genera el archivo \texttt{DatosProyecto.dzn}, ejecuta el solver y
 presenta la matriz de movimientos, la distribución final, el costo, la
 cantidad de movimientos usados, la polarización y la mediana seleccionada.
+
+El código fuente, las instancias y los artefactos reproducibles del proyecto
+se encuentran en el repositorio
+\href{https://github.com/Juan-Carlos-Cruz/Proyecto-II-ADA-II}
+{\texttt{github.com/Juan-Carlos-Cruz/Proyecto-II-ADA-II}}.
 
 \section{Descripción del problema}
 
@@ -668,5 +674,71 @@ soluciones informadas.
 
 \pendiente{reemplazar este texto por el enlace público o institucional al
 video de máximo 15 minutos antes de entregar.}
+
+\clearpage
+\appendix
+\begin{landscape}
+\section{Resultados completos de la batería suministrada}
+
+La tabla~\ref{tab:bateria-completa} presenta las 30 entradas suministradas,
+ejecutadas con MiniZinc 2.9.7 y COIN-BC 2.10.13. La columna \emph{Ref.}
+corresponde al valor publicado por el profesor y \(\Delta\) es la diferencia
+absoluta frente al resultado del modelo. Todas las ejecuciones terminaron con
+estado óptimo y aprobaron la comprobación independiente de dominio, balance,
+conservación, presupuesto, movimientos y polarización. Los tiempos son
+mediciones puntuales del solver.
+
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{lrrrrrrrrrrr}
+\caption{Resultados individuales de las 30 instancias suministradas.}
+\label{tab:bateria-completa}\\
+\toprule
+Instancia & \(n\) & \(m\) & \(ct\) & \(maxM\) & Costo & Movs. & Pol. & Ref. & \(\Delta\) & Tiempo (s) & Nodos\\
+\midrule
+\endfirsthead
+\multicolumn{12}{c}{\tablename\ \thetable{} -- continuación}\\
+\toprule
+Instancia & \(n\) & \(m\) & \(ct\) & \(maxM\) & Costo & Movs. & Pol. & Ref. & \(\Delta\) & Tiempo (s) & Nodos\\
+\midrule
+\endhead
+\midrule
+\multicolumn{12}{r}{Continúa en la página siguiente.}\\
+\endfoot
+\bottomrule
+\endlastfoot
+MinPol1 & 5 & 5 & 16.38 & 5 & 6.5988 & 5 & 0.09 & 0.09 & 0 & 0.0545 & 0\\
+MinPol2 & 5 & 5 & 75.43 & 39 & 15.6168 & 11 & 0 & 0 & 0 & 0.1365 & 0\\
+MinPol3 & 5 & 10 & 128.46 & 140 & 12.1116 & 11 & 0 & 0 & 0 & 0.0113 & 0\\
+MinPol4 & 10 & 5 & 38.74 & 19 & 23.8851 & 11 & 0 & 0 & 0 & 0.0052 & 0\\
+MinPol5 & 10 & 5 & 29.35 & 9 & 21.2271 & 9 & 0.482 & 0.482 & 0 & 0.1989 & 10\\
+MinPol6 & 20 & 5 & 22.3 & 26 & 20.5868 & 22 & 0.003 & 0.003 & 0 & 0.1744 & 6\\
+MinPol7 & 35 & 5 & 8.44 & 20 & 7.939628571 & 11 & 3.085 & 3.085 & 0 & 0.2598 & 8\\
+MinPol8 & 35 & 5 & 3.43 & 16 & 2.908571429 & 12 & 4.323 & 4.323 & 0 & 0.3304 & 6\\
+MinPol9 & 50 & 5 & 15.37 & 7 & 7.94814 & 7 & 5.373 & 5.373 & 0 & 0.2657 & 2\\
+MinPol10 & 50 & 5 & 5.85 & 18 & 5.59266 & 5 & 9.687 & 9.686 & 0.001 & 0.1948 & 0\\
+MinPol11 & 50 & 10 & 38.02 & 25 & 25.93028 & 25 & 10.349 & 10.349 & 0 & 0.7204 & 20\\
+MinPol12 & 50 & 10 & 18.78 & 42 & 18.77594 & 42 & 3.721 & 3.721 & 0 & 0.5436 & 36\\
+MinPol13 & 75 & 10 & 68.39 & 69 & 68.28957333 & 69 & 12.417 & 12.417 & 0 & 0.4184 & 13\\
+MinPol14 & 75 & 10 & 26.25 & 71 & 26.22126667 & 71 & 6.55 & 6.549 & 0.001 & 0.6211 & 40\\
+MinPol15 & 100 & 5 & 52.42 & 35 & 47.67069 & 35 & 10.313 & 10.313 & 0 & 0.1705 & 8\\
+MinPol16 & 100 & 5 & 5.82 & 38 & 2.7312 & 38 & 18.786 & 18.786 & 0 & 0.3597 & 8\\
+MinPol17 & 100 & 10 & 5.05 & 43 & 4.81794 & 43 & 14.172 & 14.171 & 0.001 & 1.7040 & 184\\
+MinPol18 & 100 & 10 & 8.31 & 42 & 6.16068 & 42 & 17.898 & 17.897 & 0.001 & 0.6343 & 105\\
+MinPol19 & 100 & 20 & 22.44 & 14 & 13.92211 & 14 & 19.603 & 19.603 & 0 & 0.5318 & 18\\
+MinPol20 & 100 & 20 & 1.67 & 4 & 1.62614 & 4 & 23.567 & 23.566 & 0.001 & 4.9216 & 110\\
+MinPol21 & 120 & 3 & 38.76 & 44 & 32.66826667 & 44 & 24.176 & 24.175 & 0.001 & 0.0648 & 0\\
+MinPol22 & 150 & 3 & 18.37 & 9 & 12.80982 & 9 & 31.135 & 31.135 & 0 & 0.0112 & 0\\
+MinPol23 & 150 & 3 & 36.29 & 17 & 7.48972 & 17 & 3.822 & 3.822 & 0 & 0.0068 & 0\\
+MinPol24 & 200 & 3 & 3.82 & 9 & 2.26497 & 1 & 29.902 & 29.902 & 0 & 0.0040 & 0\\
+MinPol25 & 180 & 3 & 15.37 & 25 & 15.02111111 & 20 & 24.775 & 24.775 & 0 & 0.0072 & 0\\
+MinPol26 & 100 & 5 & 80.76 & 20 & 70.025 & 20 & 30.748 & 30.748 & 0 & 0.1569 & 8\\
+MinPol27 & 100 & 5 & 63.68 & 30 & 63.049 & 30 & 25.021 & 25.021 & 0 & 0.1693 & 12\\
+MinPol28 & 125 & 5 & 40.44 & 31 & 35.4204 & 31 & 14.683 & 14.683 & 0 & 0.1705 & 8\\
+MinPol29 & 125 & 5 & 60.02 & 30 & 33.15 & 30 & 30 & 29.999 & 0.001 & 0.1803 & 8\\
+MinPol30 & 100 & 5 & 1000.0 & 1000 & 184.575 & 200 & 0 & 0 & 0 & 0.0258 & 0\\
+\end{longtable}
+\end{landscape}
 
 \end{document}
